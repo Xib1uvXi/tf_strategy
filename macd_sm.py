@@ -95,14 +95,17 @@ class ABMacdSignalModel:
             if self.direction == 0:
                 return self._a_open()
             
-            # rollback?
-            
-
             if self.direction == 1:
-                pass
+                if self.asm.macd_gt_zero() and self.asm.cross_below():
+                    return ABMacdAction.A_RB_SHORT
+                
+                return self._b_handle_long()
             
             if self.direction == -1:
-                pass
+                if self.asm.macd_gt_zero() and self.asm.cross_over():
+                    return ABMacdAction.A_RB_LONG
+                
+                return self._b_handle_short()
     
     def _a_open(self) -> ABMacdAction:
         if not self.asm.macd_gt_zero():
