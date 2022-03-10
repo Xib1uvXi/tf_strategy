@@ -42,14 +42,11 @@ class ABMACDStrategy(CtaTemplate):
     parameters = ["fast_window", "slow_window", "signal_period", "size", "tick_add"]
 
     variables = ["a_fast_macd0", "a_fast_macd1", "a_slow_macd0", "a_slow_macd1", 
-    "b_fast_macd0", "b_fast_macd1", "b_slow_macd0", "b_slow_macd1", "a_open_init", 
-    "a_current_direction"]
+    "b_fast_macd0", "b_fast_macd1", "b_slow_macd0", "b_slow_macd1", "a_open_init"]
 
     def __init__(self, cta_engine, strategy_name, vt_symbol, setting):
         """"""
         super().__init__(cta_engine, strategy_name, vt_symbol, setting)
-
-        self.a_current_direction = 0
 
         # A level 
         self.bg_a = MACDBarGenerator(self.on_bar, 1, self.on_a_level_bar, interval=Interval.HOUR)
