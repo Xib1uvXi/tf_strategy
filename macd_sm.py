@@ -8,29 +8,45 @@ class MacdSignalModel:
     dif1 = 0.0
     dea0 = 0.0
     dea1 = 0.0
+    init: int
 
     def __init__(self, name: string):
         self.name = name
+        self.init = 0
     
     # update signal value
     def update(self, fast_macd0: float, slow_macd0: float):
+        if self.init <= 1:
+            self.init = self.init + 1
         # swap
         self.dif1 = self.dif0
         self.dea1 = self.dea0
         self.dif0 = fast_macd0
-        self.dea1 = slow_macd0
+        self.dea0 = slow_macd0
     
     # cross signal
     def cross_over(self) -> bool:
+        if self.init <= 1:
+            return False
+
         return self.dif0 > self.dea0 and self.dif1 < self.dea1
 
     def cross_below(self) -> bool:
+        if self.init <= 1:
+            return False
+
         return self.dif0 < self.dea0 and self.dif1 > self.dea1
 
     def macd_gt_zero(self) -> bool:
+        if self.init <= 1:
+            return False
+
         return self.dif0 > 0.0 and self.dea0 > 0.0 and self.dif1 >= 0.0 and self.dea1 >= 0.0
     
     def dif_crossover_zero(self) -> bool:
+        if self.init <= 1:
+            return False
+
         return self.dif0 > 0.0 and self.dif1 <= 0.0
 
 class ABMacdAction(Enum):
