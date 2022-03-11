@@ -52,13 +52,17 @@ class MacdSignalModel:
 class ABMacdAction(Enum):
     A_OPEN_LONG = "A开多"
     A_OPEN_SHORT = "A开空"
+
     B_CLOSE_SHORT = "B平空"
     B_CLOSE_LONG = "B平多"
+
     B_OPEN_LONG = "B开多"
     B_OPEN_LONG_A = "B多回"
     B_OPEN_SHORT_A = "B空回"
+    
     A_RB_SHORT = "A平多开空"
     A_RB_LONG = "A平空开多"
+    
     EMPTY = "EMPTY"
 
 class ABMacdSignalModel:

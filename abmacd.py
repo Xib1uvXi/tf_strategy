@@ -12,6 +12,7 @@ from vnpy_ctastrategy import (
 from vnpy.trader.constant import Interval
 from vnpy.trader.constant import Status
 from vnpy_ctastrategy.base import EngineType
+from abmacd_dt import MacdDecision
 
 from barg import MACDBarGenerator
 from macd_sm import ABMacdSignalModel
@@ -57,7 +58,7 @@ class ABMACDStrategy(CtaTemplate):
         self.am_b = ArrayManager()
 
         self.sm = ABMacdSignalModel()
-        # ADD sm trade handler
+        self.dt = MacdDecision(self.buy, self.short, self.sell, self.cover)
 
 
     def on_init(self):
@@ -100,9 +101,8 @@ class ABMACDStrategy(CtaTemplate):
         self.bg_b.update_bar(bar)
         self.bg_a.update_bar(bar)
 
-        #TODO
         action = self.sm.exec()
-
+        self.dt.dt(self.pos, action, bar.close_price, self.size)
     
     def on_order(self, order: OrderData):
         """
@@ -148,18 +148,3 @@ class ABMACDStrategy(CtaTemplate):
         slow_macd0 = dea[-1]
 
         self.sm.update_a_signal_value(fast_macd0, slow_macd0)
-
-    # TODO 以后考虑
-    def long_price(self):
-        if self.last_tick:
-            return self.last_tick.ask_price_1 + self.tick_add
-        
-        if self.get_engine_type() == EngineType.BACKTESTING:
-            return self.last_bar.close_price + self.tick_add
-    
-    def short_price(self):
-        if self.last_tick:
-            return self.last_tick.bid_price_1 - self.tick_add
-
-        if self.get_engine_type() == EngineType.BACKTESTING:
-            return self.last_bar.close_price - self.tick_add
