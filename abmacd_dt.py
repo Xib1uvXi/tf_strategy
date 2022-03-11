@@ -24,6 +24,8 @@ class MacdDecision:
         if action is ABMacdAction.EMPTY:
             return
 
+        print(action.value)
+
         if action is ABMacdAction.A_OPEN_LONG:
             if abs(pos) > 0:
                 #print("================= 已经有仓位，还要进行开仓动作 LONG=================")
