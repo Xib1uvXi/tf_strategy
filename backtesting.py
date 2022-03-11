@@ -47,11 +47,11 @@ engine = BacktestingEngine()
 engine.set_parameters(
     vt_symbol="RU88.SHFE",
     interval="1m",
-    start=datetime(2020, 12, 1),
+    start=datetime(2020, 2, 16),
     end=datetime(2021, 2, 16),
     rate=0.3 / 10000,
     slippage=0.2,
-    size=30,
+    size=10,
     pricetick=0.2,
     capital=1_000_000,
 )

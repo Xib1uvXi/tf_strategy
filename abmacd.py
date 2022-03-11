@@ -34,7 +34,7 @@ class ABMACDStrategy(CtaTemplate):
     b_slow_macd0 = 0.0
     b_slow_macd1 = 0.0
 
-    size = 1.0
+    size = 5.0
     
     tick_add = 0.0
     last_tick = None
@@ -66,7 +66,7 @@ class ABMACDStrategy(CtaTemplate):
         Callback when strategy is inited.
         """
         self.write_log("策略初始化")
-        self.load_bar(10, use_database=True)
+        self.load_bar(20)
 
     def on_start(self):
         """
