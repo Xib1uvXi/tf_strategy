@@ -160,4 +160,6 @@ class ABMACDStrategy(CtaTemplate):
         fast_macd0 = dif[-1]
         slow_macd0 = dea[-1]
 
+        #print(bar.datetime, fast_macd0, slow_macd0)
+
         self.sm.update_a_signal_value(fast_macd0, slow_macd0)

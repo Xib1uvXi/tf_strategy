@@ -66,6 +66,11 @@ class TestAB(unittest.TestCase):
         r = abm.exec()
         self.assertEqual(r, ABMacdAction.A_RB_SHORT)
 
+    
+    def d1(self):
+        abm = ABMacdSignalModel()
+
+
 
 
 if __name__ == '__main__':
