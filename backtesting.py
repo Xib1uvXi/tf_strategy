@@ -2,13 +2,12 @@ from vnpy_ctastrategy.backtesting import BacktestingEngine
 from abmacd import ABMACDStrategy
 from datetime import datetime
 
-# def print_trade_data(engine: BacktestingEngine):
-#     trade_data = engine.get_all_trades()
+def print_trade_data(engine: BacktestingEngine):
+    trade_data = engine.get_all_trades()
 
-#     print("================================trade data===============================")
-#     for data in trade_data:
-#         # print(data)
-#         print("order_id: ",data.orderid, "time: ", data.datetime.strftime( '%Y-%m-%d %H-%M-%S'), "action: ", print_action(data), "price: ", data.price, "amount: ", data.volume)
+    print("================================trade data===============================")
+    for data in trade_data:
+        print("order_id: ",data.orderid, "time: ", data.datetime.strftime( '%Y-%m-%d %H-%M-%S'), "action: ", data.offset.value, data.direction.value, "price: ", data.price, "amount: ", data.volume)
 
 
 # def print_drawdown_trade(trade_data):
@@ -62,7 +61,4 @@ engine.calculate_statistics()
 # engine.show_chart()
 
 #########
-# trade_data = engine.get_all_trades()
-
-# for data in trade_data:
-#      print("order_id: ",data.orderid, "time: ", data.datetime.strftime( '%Y-%m-%d %H-%M-%S'), "action: ", data.offset.value, data.direction.value, "price: ", data.price, "amount: ", data.volume)
+# print_trade_data(engine)
