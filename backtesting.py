@@ -62,7 +62,7 @@ engine.calculate_statistics()
 # engine.show_chart()
 
 #########
-trade_data = engine.get_all_trades()
+# trade_data = engine.get_all_trades()
 
-for data in trade_data:
-     print("order_id: ",data.orderid, "time: ", data.datetime.strftime( '%Y-%m-%d %H-%M-%S'), "action: ", data.offset.value, data.direction.value, "price: ", data.price, "amount: ", data.volume)
+# for data in trade_data:
+#      print("order_id: ",data.orderid, "time: ", data.datetime.strftime( '%Y-%m-%d %H-%M-%S'), "action: ", data.offset.value, data.direction.value, "price: ", data.price, "amount: ", data.volume)

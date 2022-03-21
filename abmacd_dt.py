@@ -24,7 +24,7 @@ class MacdDecision:
         if action is ABMacdAction.EMPTY:
             return
 
-        print(action.value)
+        # print(action.value)
 
         if action is ABMacdAction.A_OPEN_LONG:
             if abs(pos) > 0:
@@ -106,22 +106,3 @@ class MacdDecision:
 
             self.short(price, size)
             return
-        
-
-
-
-        
-
-
-            
-
-
-        
-
-
-
-
-
-        
-
-
