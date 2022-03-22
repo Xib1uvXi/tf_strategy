@@ -44,13 +44,13 @@ engine = BacktestingEngine()
 engine.set_parameters(
     vt_symbol="RU88.SHFE",
     interval="1m",
-    start=datetime(2021, 2, 16),
+    start=datetime(2012, 2, 16),
     end=datetime(2022, 2, 16),
-    rate=0.3 / 10000,
-    slippage=0.2,
-    size=30,
-    pricetick=0.2,
-    capital=1_000_000,
+    rate=0.45 / 10000,
+    slippage=5,
+    size=10,
+    pricetick=5,
+    capital=5_00_000,
 )
 engine.add_strategy(ABMACDStrategy, {})
 
@@ -61,4 +61,4 @@ engine.calculate_statistics()
 # engine.show_chart()
 
 #########
-print_trade_data(engine)
+# print_trade_data(engine)

@@ -29,6 +29,7 @@ class MacdDecision:
                 return
             
             id = self.buy(price, size)
+            #print(id, action.value, "buy")
             return
         
         if action is ABMacdAction.A_OPEN_SHORT:
@@ -36,6 +37,7 @@ class MacdDecision:
                 return
             
             id = self.short(price, size)
+            #print(id, action.value, "short")
             return
         
         if action is ABMacdAction.B_CLOSE_LONG:
@@ -44,6 +46,7 @@ class MacdDecision:
             
             # TODO 这里需要考虑 多回&做多的仓位管理
             id = self.sell(price, abs(pos))
+            #print(id, action.value, "sell")
             return
         
         if action is ABMacdAction.B_CLOSE_SHORT:
@@ -51,6 +54,7 @@ class MacdDecision:
                 return
             
             id = self.cover(price, abs(pos))
+            #print(id, action.value, "cover")
             return
         
         if action is ABMacdAction.B_OPEN_LONG:
@@ -58,6 +62,7 @@ class MacdDecision:
 
             if pos >= 0:
                 id = self.buy(price, size)
+                #print(id, action.value, "buy")
             
             return
         
@@ -69,6 +74,7 @@ class MacdDecision:
 
             if pos == 0:
                 id = self.buy(price, size)
+                #print(id, action.value, "buy")
             
             return
         
@@ -79,6 +85,7 @@ class MacdDecision:
             
             if pos == 0:
                 id = self.short(price, size)
+                #print(id, action.value, "short")
             return
         
         if action is ABMacdAction.A_RB_LONG:
@@ -87,12 +94,15 @@ class MacdDecision:
             
             if pos == 0:
                 id = self.buy(price, size)
+                #print(id, action.value, "buy")
                 return
             
             if pos < 0:
                 id = self.cover(price, abs(pos))
+                #print(id, action.value, "conver")
             
             id = self.buy(price, size)
+            #print(id, action.value, "buy")
             return
 
         if action is ABMacdAction.A_RB_SHORT:
@@ -101,10 +111,13 @@ class MacdDecision:
 
             if pos == 0:
                 id = self.short(price, size)
+                #print(id, action.value, "short")
                 return
             
             if pos > 0:
                 id = self.sell(price, abs(pos))
+                #print(id, action.value, "sell")
 
             id = self.short(price, size)
+            #print(id, action.value, "short")
             return
