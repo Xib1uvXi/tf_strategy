@@ -61,46 +61,6 @@ class ABMACDStrategy(CtaTemplate):
         self.bg_b = BarGenerator(self.on_bar, 15, self.on_b_level_bar)
         self.am_b = ArrayManager()
     
-    def init_1d1h(self):
-        # A level 
-        self.bg_a = BarGenerator(self.on_bar, 1, self.on_a_level_bar, interval=Interval.DAILY)
-        self.am_a = ArrayManager()
-
-        # B level
-        self.bg_b = MACDBarGenerator(self.on_bar, 1, self.on_b_level_bar, interval=Interval.HOUR)
-        self.am_b = ArrayManager()
-    
-    def init_1d4h(self):
-        # A level 
-        self.bg_a = BarGenerator(self.on_bar, 1, self.on_a_level_bar, interval=Interval.DAILY)
-        self.am_a = ArrayManager()
-
-        # B level
-        self.bg_b = MACDBarGenerator(self.on_bar, 4, self.on_b_level_bar, interval=Interval.HOUR)
-        self.am_b = ArrayManager()
-    
-    # ---------------------------------
-    def init_1dx(self):
-        # A level 
-        self.bg_a = BarGenerator(self.on_bar, 1, self.on_a_level_bar, interval=Interval.DAILY)
-        self.am_a = ArrayManager()
-
-        # B level
-        # self.bg_b = MACDBarGenerator(self.on_bar, 1, self.on_b_level_bar, interval=Interval.HOUR)
-        self.bg_b = BarGenerator(self.on_bar, 50, self.on_b_level_bar)
-        self.am_b = ArrayManager()
-    
-    # ---------------------------------
-    def init_xhxm(self):
-        # A level 
-        self.bg_a = BarGenerator(self.on_bar, 2, self.on_a_level_bar, interval=Interval.HOUR)
-        self.am_a = ArrayManager()
-
-        # B level
-        self.bg_b = BarGenerator(self.on_bar, 30, self.on_b_level_bar)
-        self.am_b = ArrayManager()
-
-
     def on_init(self):
         """
         Callback when strategy is inited.
