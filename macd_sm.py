@@ -115,12 +115,14 @@ class ABMacdSignalModel:
             
             if self.direction == 1:
                 if self.asm.macd_gt_zero() and self.asm.cross_below():
+                    self.direction = -1
                     return ABMacdAction.A_RB_SHORT
                 
                 return self._b_handle_long()
             
             if self.direction == -1:
                 if self.asm.macd_gt_zero() and self.asm.cross_over():
+                    self.direction = 1
                     return ABMacdAction.A_RB_LONG
                 
                 return self._b_handle_short()

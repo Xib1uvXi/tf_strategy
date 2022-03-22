@@ -34,7 +34,7 @@ class ABMACDStrategy(CtaTemplate):
     b_slow_macd0 = 0.0
     b_slow_macd1 = 0.0
 
-    size = 1.0
+    size = 10.0
     
     tick_add = 0.0
     last_tick = None
@@ -49,7 +49,8 @@ class ABMACDStrategy(CtaTemplate):
         """"""
         super().__init__(cta_engine, strategy_name, vt_symbol, setting)
 
-        self.init_1h15min()
+        # self.init_1h15min()
+        self.init_1d4h()
 
         self.sm = ABMacdSignalModel()
         self.dt = MacdDecision(self.buy, self.short, self.sell, self.cover)
@@ -70,6 +71,36 @@ class ABMACDStrategy(CtaTemplate):
 
         # B level
         self.bg_b = MACDBarGenerator(self.on_bar, 1, self.on_b_level_bar, interval=Interval.HOUR)
+        self.am_b = ArrayManager()
+    
+    def init_1d4h(self):
+        # A level 
+        self.bg_a = BarGenerator(self.on_bar, 1, self.on_a_level_bar, interval=Interval.DAILY)
+        self.am_a = ArrayManager()
+
+        # B level
+        self.bg_b = MACDBarGenerator(self.on_bar, 4, self.on_b_level_bar, interval=Interval.HOUR)
+        self.am_b = ArrayManager()
+    
+    # ---------------------------------
+    def init_1dx(self):
+        # A level 
+        self.bg_a = BarGenerator(self.on_bar, 1, self.on_a_level_bar, interval=Interval.DAILY)
+        self.am_a = ArrayManager()
+
+        # B level
+        # self.bg_b = MACDBarGenerator(self.on_bar, 1, self.on_b_level_bar, interval=Interval.HOUR)
+        self.bg_b = BarGenerator(self.on_bar, 50, self.on_b_level_bar)
+        self.am_b = ArrayManager()
+    
+    # ---------------------------------
+    def init_xhxm(self):
+        # A level 
+        self.bg_a = BarGenerator(self.on_bar, 2, self.on_a_level_bar, interval=Interval.HOUR)
+        self.am_a = ArrayManager()
+
+        # B level
+        self.bg_b = BarGenerator(self.on_bar, 30, self.on_b_level_bar)
         self.am_b = ArrayManager()
 
 
@@ -159,5 +190,7 @@ class ABMACDStrategy(CtaTemplate):
         dif, dea, hist = self.am_a.macd(self.fast_window, self.slow_window, self.signal_period, True)
         fast_macd0 = dif[-1]
         slow_macd0 = dea[-1]
+
+        #print(bar.datetime, fast_macd0, slow_macd0)
 
         self.sm.update_a_signal_value(fast_macd0, slow_macd0)
