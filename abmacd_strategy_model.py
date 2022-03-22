@@ -166,6 +166,7 @@ class ABMacdStrategyModel:
         
         if self.pos < 0:
             vt_ids1 = self.cover(self._rollback_cover_price(price), abs(self.pos))
+            self.target_pos = 0
             self._handle_debug(action, vt_ids1, "cover")
 
             vt_ids2 = self.buy(price, self.fixed_size)
@@ -183,6 +184,7 @@ class ABMacdStrategyModel:
         
         if self.pos > 0:
             vt_ids1 = self.sell(self._rollback_sell_price(price), abs(self.pos))
+            self.target_pos = 0
             self._handle_debug(action, vt_ids1, "sell")
 
             vt_ids2 = self.short(price, self.fixed_size)

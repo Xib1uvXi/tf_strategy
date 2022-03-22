@@ -48,7 +48,7 @@ class ABMACDStrategy(CtaTemplate):
         """"""
         super().__init__(cta_engine, strategy_name, vt_symbol, setting)
 
-        self.init_1h15min()
+        self.init_1d4h()
 
         self.sm = ABMacdStrategyModel(self.buy, self.short, self.sell, self.cover, self.size, self.get_pricetick())
     
@@ -59,6 +59,15 @@ class ABMACDStrategy(CtaTemplate):
 
         # B level
         self.bg_b = BarGenerator(self.on_bar, 15, self.on_b_level_bar)
+        self.am_b = ArrayManager()
+    
+    def init_1d4h(self):
+        # A level 
+        self.bg_a = BarGenerator(self.on_bar, 1, self.on_a_level_bar, interval=Interval.DAILY)
+        self.am_a = ArrayManager()
+
+        # B level
+        self.bg_b = MACDBarGenerator(self.on_bar, 4, self.on_b_level_bar, interval=Interval.HOUR)
         self.am_b = ArrayManager()
     
     def on_init(self):

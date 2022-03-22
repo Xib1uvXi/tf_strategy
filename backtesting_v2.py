@@ -32,7 +32,7 @@ def run_backtesting(strategy_class, setting, vt_symbol, interval, start, end, ra
     engine.run_backtesting()
     df = engine.calculate_result()
     engine.calculate_statistics()
-    print_trade_data(engine)
+    # print_trade_data(engine)
     return df
 
 # def show_portafolio(df):
@@ -46,7 +46,7 @@ ru88_1_year = run_backtesting(
     setting={'size':10}, 
     vt_symbol="RU88.SHFE",
     interval="1m", 
-    start=datetime(2021, 2, 16), 
+    start=datetime(2012, 2, 16), 
     end=datetime(2022, 2, 16),
     rate=0.45 / 10000,
     slippage=5,
