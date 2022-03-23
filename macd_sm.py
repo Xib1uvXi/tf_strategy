@@ -89,8 +89,8 @@ class ABMacdSignalModel:
         self.b_sv_init = True
     
     def exec(self) -> ABMacdAction:
-        if not (self.a_sv_init and self.b_sv_init):
-            return ABMacdAction.EMPTY
+        if self.a_sv_init == False and self.b_sv_init == False:
+             return ABMacdAction.EMPTY
         
         if self.b_sv_init and not self.a_sv_init:
             # reset b_sv_init
