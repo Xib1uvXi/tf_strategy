@@ -133,8 +133,6 @@ class ABMACDStrategy(CtaTemplate):
         pass
 
     def on_b_level_bar(self, bar: BarData):
-        # self.cancel_all()
-
         self.am_b.update_bar(bar)
         if not self.am_b.inited:
             return
@@ -147,8 +145,6 @@ class ABMACDStrategy(CtaTemplate):
 
 
     def on_a_level_bar(self, bar: BarData):
-        # self.cancel_all()
-
         self.am_a.update_bar(bar)
         if not self.am_a.inited:
             return
