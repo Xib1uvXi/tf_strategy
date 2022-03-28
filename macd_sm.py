@@ -73,6 +73,9 @@ class ABMacdSignalModel:
     b_sv_init: bool
     direction: int
 
+    # 1-> crossover, -1 -> crossbelow
+    a_current_cross_state: int
+
     def __init__(self):
         self.asm = MacdSignalModel("A")
         self.bsm = MacdSignalModel("B")
@@ -80,8 +83,27 @@ class ABMacdSignalModel:
         self.b_sv_init = False
         self.direction = 0
 
+        self.a_current_cross_state = 0
+
+    # TODO Need Confirm
     def update_a_signal_value(self, fast_macd0: float, slow_macd0: float):
         self.asm.update(fast_macd0, slow_macd0)
+        
+        if self.a_current_cross_state == 0:
+            if self.asm.cross_over():
+                self.a_current_cross_state = 1
+        
+            if self.asm.cross_below():
+                self.a_current_cross_state = -1
+        
+        # cross over -> cross below
+        if self.a_current_cross_state == 1 and self.asm.cross_below():
+            self.a_current_cross_state = -1
+
+        # cross below -> cross over
+        if self.a_current_cross_state == -1 and self.asm.cross_over():
+            self.a_current_cross_state = 1
+
         self.a_sv_init = True
     
     def update_b_signal_value(self, fast_macd0: float, slow_macd0: float):
@@ -115,13 +137,15 @@ class ABMacdSignalModel:
             
             if self.direction == 1:
                 if self.asm.macd_gt_zero() and self.asm.cross_below():
+                # if self.asm.macd_gt_zero() and self.a_current_cross_state == -1:
                     self.direction = -1
                     return ABMacdAction.A_RB_SHORT
                 
                 return self._b_handle_long()
             
             if self.direction == -1:
-                if self.asm.macd_gt_zero() and self.asm.cross_over():
+                # if self.asm.macd_gt_zero() and self.asm.cross_over():
+                if self.asm.macd_gt_zero() and self.a_current_cross_state == 1:
                     self.direction = 1
                     return ABMacdAction.A_RB_LONG
                 

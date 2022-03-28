@@ -49,7 +49,6 @@ class ABMACDStrategy(CtaTemplate):
         super().__init__(cta_engine, strategy_name, vt_symbol, setting)
 
         self.init_1h15min()
-        # self.init_1d4h()
 
         self.sm = ABMacdStrategyModel(self.buy, self.short, self.sell, self.cover, self.size, self.get_pricetick())
     
