@@ -405,6 +405,7 @@ class BarGenerator:
 
             finished_bar = self.hour_bar
             self.hour_bar = None
+        # TODO FIXME
         elif self.hour_bar.datetime.date() != bar.datetime.date() and bar.datetime.time() > time(14,59):
             finished_bar = self.hour_bar
 
