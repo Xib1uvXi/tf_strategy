@@ -368,6 +368,7 @@ class BarGenerator:
                 self.window_bar = None
         
     def update_bar_daily_window(self, bar: BarData) -> None:
+        # If not inited, create window bar object
         if not self.hour_bar:
             dt = bar.datetime.replace(hour=0, minute=0, second=0, microsecond=0)
             self.hour_bar = BarData(
@@ -384,10 +385,10 @@ class BarGenerator:
                 open_interest=bar.open_interest
             )
             return
-        
+
         finished_bar = None
 
-        if bar.datetime.time() == time(14, 59):
+        if bar.datetime.time == time(14,59):
             self.hour_bar.high_price = max(
                 self.hour_bar.high_price,
                 bar.high_price
@@ -404,10 +405,10 @@ class BarGenerator:
 
             finished_bar = self.hour_bar
             self.hour_bar = None
-        
-        elif self.hour_bar.datetime.date() != bar.datetime.date() and bar.datetime.time() > time(14, 59):
+        elif self.hour_bar.datetime.date() != bar.datetime.date() and bar.datetime.time() > time(14,59):
             finished_bar = self.hour_bar
-            dt = bar.datetime.replace(minute=0, second=0, microsecond=0)
+
+            dt = bar.datetime.replace(hour=0, minute=0, second=0, microsecond=0)
             self.hour_bar = BarData(
                 symbol=bar.symbol,
                 exchange=bar.exchange,
@@ -421,12 +422,26 @@ class BarGenerator:
                 turnover=bar.turnover,
                 open_interest=bar.open_interest
             )
+        # Otherwise only update minute bar
         else:
-            self.merge_bar(bar)
+            self.hour_bar.high_price = max(
+                self.hour_bar.high_price,
+                bar.high_price
+            )
+            self.hour_bar.low_price = min(
+                self.hour_bar.low_price,
+                bar.low_price
+            )
+
+            self.hour_bar.close_price = bar.close_price
+            self.hour_bar.volume += bar.volume
+            self.hour_bar.turnover += bar.turnover
+            self.hour_bar.open_interest = bar.open_interest
 
         # Push finished window bar
         if finished_bar:
             self.on_hour_bar(finished_bar)
+
 
     def generate(self) -> Optional[BarData]:
         """

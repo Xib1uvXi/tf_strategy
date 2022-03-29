@@ -26,6 +26,7 @@ class DoubleMaStrategy(CtaTemplate):
         super().__init__(cta_engine, strategy_name, vt_symbol, setting)
 
         self.bg15 = BarGenerator(self.on_bar, 1, self.on_15min_bar, interval=Interval.DAILY)
+        # self.bg15 = BarGenerator(self.on_bar, 1, self.on_15min_bar, interval=Interval.HOUR)
         self.am15 = ArrayManager()
 
     def on_init(self):
@@ -97,7 +98,7 @@ engine = BacktestingEngine()
 engine.set_parameters(
     vt_symbol="RU88.SHFE",
     interval="1m",
-    start=datetime(2021, 12, 1),
+    start=datetime(2021, 1, 1),
     end=datetime(2022, 3, 28),
     rate=0.3 / 10000,
     slippage=0.2,
