@@ -114,6 +114,9 @@ class BarGenerator:
                 self.fe_update_bar_hour_window(bar)
             else:
                 self.update_bar_hour_window(bar)
+        elif self.interval == Interval.DAILY:
+            if bar.exchange in [Exchange.SHFE, Exchange.DCE, Exchange.CZCE]:
+                self.update_bar_daily_window(bar)
         else:
             self.update_bar_hour_window(bar)
 
@@ -158,8 +161,6 @@ class BarGenerator:
             self.window_bar = None
 
     def fe_update_bar_hour_window(self, bar: BarData) -> None:
-        
-        
         if not self.hour_bar:
             self.new_1h_bar(bar)
             return
@@ -205,13 +206,13 @@ class BarGenerator:
         
         # Otherwise only update minute bar
         else:
-            self.merge_1h_bar(bar)
+            self.merge_bar(bar)
         
         # Push finished window bar
         if finished_bar:
             self.on_hour_bar(finished_bar)
 
-    def merge_1h_bar(self, bar: BarData):
+    def merge_bar(self, bar: BarData):
         self.hour_bar.high_price = max(
             self.hour_bar.high_price,
             bar.high_price
@@ -365,6 +366,67 @@ class BarGenerator:
                 self.interval_count = 0
                 self.on_window_bar(self.window_bar)
                 self.window_bar = None
+        
+    def update_bar_daily_window(self, bar: BarData) -> None:
+        if not self.hour_bar:
+            dt = bar.datetime.replace(hour=0, minute=0, second=0, microsecond=0)
+            self.hour_bar = BarData(
+                symbol=bar.symbol,
+                exchange=bar.exchange,
+                datetime=dt,
+                gateway_name=bar.gateway_name,
+                open_price=bar.open_price,
+                high_price=bar.high_price,
+                low_price=bar.low_price,
+                close_price=bar.close_price,
+                volume=bar.volume,
+                turnover=bar.turnover,
+                open_interest=bar.open_interest
+            )
+            return
+        
+        finished_bar = None
+
+        if bar.datetime.time() == time(14, 59):
+            self.hour_bar.high_price = max(
+                self.hour_bar.high_price,
+                bar.high_price
+            )
+            self.hour_bar.low_price = min(
+                self.hour_bar.low_price,
+                bar.low_price
+            )
+
+            self.hour_bar.close_price = bar.close_price
+            self.hour_bar.volume += bar.volume
+            self.hour_bar.turnover += bar.turnover
+            self.hour_bar.open_interest = bar.open_interest
+
+            finished_bar = self.hour_bar
+            self.hour_bar = None
+        
+        elif self.hour_bar.datetime.date() != bar.datetime.date() and bar.datetime.time() > time(14, 59):
+            finished_bar = self.hour_bar
+            dt = bar.datetime.replace(minute=0, second=0, microsecond=0)
+            self.hour_bar = BarData(
+                symbol=bar.symbol,
+                exchange=bar.exchange,
+                datetime=dt,
+                gateway_name=bar.gateway_name,
+                open_price=bar.open_price,
+                high_price=bar.high_price,
+                low_price=bar.low_price,
+                close_price=bar.close_price,
+                volume=bar.volume,
+                turnover=bar.turnover,
+                open_interest=bar.open_interest
+            )
+        else:
+            self.merge_bar(bar)
+
+        # Push finished window bar
+        if finished_bar:
+            self.on_hour_bar(finished_bar)
 
     def generate(self) -> Optional[BarData]:
         """
