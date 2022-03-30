@@ -5,7 +5,6 @@ from vnpy_ctastrategy import (
     BarData,
     TradeData,
     OrderData,
-    BarGenerator,
     ArrayManager,
 )
 
@@ -13,8 +12,8 @@ from vnpy.trader.constant import Interval
 from vnpy.trader.constant import Status
 from vnpy_ctastrategy.base import EngineType
 from abmacd_strategy_model import ABMacdStrategyModel
+from ft_bargenerator import BarGenerator
 
-from barg import MACDBarGenerator
 
 class ABMACDStrategy(CtaTemplate):
     """"""
@@ -54,7 +53,7 @@ class ABMACDStrategy(CtaTemplate):
     
     def init_1h15min(self):
         # A level 
-        self.bg_a = MACDBarGenerator(self.on_bar, 1, self.on_a_level_bar, interval=Interval.HOUR)
+        self.bg_a = BarGenerator(self.on_bar, 1, self.on_a_level_bar, interval=Interval.HOUR)
         self.am_a = ArrayManager()
 
         # B level
@@ -67,7 +66,7 @@ class ABMACDStrategy(CtaTemplate):
         self.am_a = ArrayManager()
 
         # B level
-        self.bg_b = MACDBarGenerator(self.on_bar, 4, self.on_b_level_bar, interval=Interval.HOUR)
+        self.bg_b = BarGenerator(self.on_bar, 4, self.on_b_level_bar, interval=Interval.HOUR)
         self.am_b = ArrayManager()
     
     def on_init(self):
