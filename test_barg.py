@@ -34,7 +34,7 @@ class DoubleMaStrategy(CtaTemplate):
         Callback when strategy is inited.
         """
         self.write_log("策略初始化")
-        self.load_bar(10)
+        self.load_bar(1)
 
     def on_start(self):
         """
@@ -99,7 +99,7 @@ engine.set_parameters(
     vt_symbol="RU88.SHFE",
     interval="1m",
     start=datetime(2021, 1, 1),
-    end=datetime(2022, 3, 28),
+    end=datetime(2022, 3, 15),
     rate=0.3 / 10000,
     slippage=0.2,
     size=30,
