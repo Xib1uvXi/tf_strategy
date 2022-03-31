@@ -49,6 +49,12 @@ class MacdSignalModel:
 
         return self.dif0 > 0.0 and self.dif1 <= 0.0
 
+    def dif_dea_crossover_zero(self) -> bool:
+        if self.init <= 1:
+            return False
+        
+        return self.dif0 > 0.0 and self.dea0 > 0.0 and self.dif1 <= 0.0 and self.dea1 <= 0.0
+
 class ABMacdAction(Enum):
     A_OPEN_LONG = "A开多"
     A_OPEN_SHORT = "A开空"
@@ -85,7 +91,6 @@ class ABMacdSignalModel:
 
         self.a_current_cross_state = 0
 
-    # TODO Need Confirm
     def update_a_signal_value(self, fast_macd0: float, slow_macd0: float):
         self.asm.update(fast_macd0, slow_macd0)
         
@@ -137,14 +142,16 @@ class ABMacdSignalModel:
             
             if self.direction == 1:
                 if self.asm.macd_gt_zero() and self.asm.cross_below():
-                # if self.asm.macd_gt_zero() and self.a_current_cross_state == -1:
                     self.direction = -1
                     return ABMacdAction.A_RB_SHORT
                 
                 return self._b_handle_long()
             
             if self.direction == -1:
-                # if self.asm.macd_gt_zero() and self.asm.cross_over():
+                if self.asm.dif_dea_crossover_zero() and self.a_current_cross_state == 1:
+                    self.direction = 1
+                    return ABMacdAction.A_RB_LONG
+
                 if self.asm.macd_gt_zero() and self.a_current_cross_state == 1:
                     self.direction = 1
                     return ABMacdAction.A_RB_LONG

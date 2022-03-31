@@ -405,7 +405,6 @@ class BarGenerator:
 
             finished_bar = self.hour_bar
             self.hour_bar = None
-        # TODO FIXME
         elif self.hour_bar.datetime.date() != bar.datetime.date():
             dif_day = (bar.datetime - self.hour_bar.datetime).days
             # next day?

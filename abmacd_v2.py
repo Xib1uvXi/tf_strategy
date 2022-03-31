@@ -67,7 +67,6 @@ class ABMACDStrategy(CtaTemplate):
         Callback when strategy is inited.
         """
         self.write_log("策略初始化")
-        # TODO need fix
         self.load_bar(3)
 
     def on_start(self):
