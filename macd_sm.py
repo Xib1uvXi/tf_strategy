@@ -59,6 +59,8 @@ class ABMacdAction(Enum):
     A_OPEN_LONG = "A开多"
     A_OPEN_SHORT = "A开空"
 
+    A_CLOSE_SHORT = "A平空"
+
     B_CLOSE_SHORT = "B平空"
     B_CLOSE_LONG = "B平多"
 
@@ -148,13 +150,15 @@ class ABMacdSignalModel:
                 return self._b_handle_long()
             
             if self.direction == -1:
-                if self.asm.dif_dea_crossover_zero() and self.a_current_cross_state == 1:
-                    self.direction = 1
-                    return ABMacdAction.A_RB_LONG
-
-                if self.asm.macd_gt_zero() and self.a_current_cross_state == 1:
-                    self.direction = 1
-                    return ABMacdAction.A_RB_LONG
+                if self.asm.macd_gt_zero():
+                    if self.asm.cross_over():
+                        self.direction = 1
+                        return ABMacdAction.A_RB_LONG
+                
+                else:
+                    if self.a_current_cross_state == 1:
+                        self.direction = 0
+                        return ABMacdAction.A_CLOSE_SHORT
                 
                 return self._b_handle_short()
     

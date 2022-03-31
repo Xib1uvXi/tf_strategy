@@ -73,6 +73,8 @@ class ABMacdStrategyModel:
             self._handle_a_short_to_long(price, action)
         elif action is ABMacdAction.A_RB_SHORT:
             self._handle_a_long_to_short(price, action)
+        elif action is ABMacdAction.A_CLOSE_SHORT:
+            self._handle_a_close_short(price, action)
         
         self.last_action = action
         return
@@ -137,6 +139,13 @@ class ABMacdStrategyModel:
         self.target_pos = self.target_pos + self.pos
         vt_ids = self.cover(price, abs(self.pos))
         self._handle_debug(action, vt_ids, "cover")
+    
+    # ABMacdAction.AA_CLOSE_SHORT
+    def _handle_a_close_short(self, price: float, action):
+        if self.pos >= 0:
+            return
+        vt_ids = self.cover(price, abs(self.pos))
+        self._handle_debug(action, vt_ids, "a_cover")
     
     # ABMacdAction.B_OPEN_SHORT_A
     def _handle_b_short_back(self, price: float, action):
