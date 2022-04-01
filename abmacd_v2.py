@@ -138,7 +138,7 @@ class ABMACDStrategy(CtaTemplate):
 
         self.sm.update_signal(fast_macd0, slow_macd0)
 
-        ma_filter = self.am_b.sma(10, True)
+        ma_filter = self.am_b.sma(5, True)
         self.sm.update_ma10filter(ma_filter[-1])
 
 
