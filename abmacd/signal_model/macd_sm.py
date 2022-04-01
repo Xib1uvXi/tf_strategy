@@ -49,9 +49,17 @@ class MacdSignalModel:
 
         return self.dif0 > 0.0 and self.dif1 <= 0.0
 
+    def dif_dea_crossover_zero(self) -> bool:
+        if self.init <= 1:
+            return False
+        
+        return self.dif0 > 0.0 and self.dea0 > 0.0 and self.dif1 <= 0.0 and self.dea1 <= 0.0
+
 class ABMacdAction(Enum):
     A_OPEN_LONG = "A开多"
     A_OPEN_SHORT = "A开空"
+
+    A_CLOSE_SHORT = "A平空"
 
     B_CLOSE_SHORT = "B平空"
     B_CLOSE_LONG = "B平多"
@@ -73,6 +81,9 @@ class ABMacdSignalModel:
     b_sv_init: bool
     direction: int
 
+    # 1-> crossover, -1 -> crossbelow
+    a_current_cross_state: int
+
     def __init__(self):
         self.asm = MacdSignalModel("A")
         self.bsm = MacdSignalModel("B")
@@ -80,8 +91,26 @@ class ABMacdSignalModel:
         self.b_sv_init = False
         self.direction = 0
 
+        self.a_current_cross_state = 0
+
     def update_a_signal_value(self, fast_macd0: float, slow_macd0: float):
         self.asm.update(fast_macd0, slow_macd0)
+        
+        if self.a_current_cross_state == 0:
+            if self.asm.cross_over():
+                self.a_current_cross_state = 1
+        
+            if self.asm.cross_below():
+                self.a_current_cross_state = -1
+        
+        # cross over -> cross below
+        if self.a_current_cross_state == 1 and self.asm.cross_below():
+            self.a_current_cross_state = -1
+
+        # cross below -> cross over
+        if self.a_current_cross_state == -1 and self.asm.cross_over():
+            self.a_current_cross_state = 1
+
         self.a_sv_init = True
     
     def update_b_signal_value(self, fast_macd0: float, slow_macd0: float):
@@ -89,8 +118,8 @@ class ABMacdSignalModel:
         self.b_sv_init = True
     
     def exec(self) -> ABMacdAction:
-        if not (self.a_sv_init and self.b_sv_init):
-            return ABMacdAction.EMPTY
+        if self.a_sv_init == False and self.b_sv_init == False:
+             return ABMacdAction.EMPTY
         
         if self.b_sv_init and not self.a_sv_init:
             # reset b_sv_init
@@ -121,9 +150,15 @@ class ABMacdSignalModel:
                 return self._b_handle_long()
             
             if self.direction == -1:
-                if self.asm.macd_gt_zero() and self.asm.cross_over():
-                    self.direction = 1
-                    return ABMacdAction.A_RB_LONG
+                if self.asm.macd_gt_zero():
+                    if self.asm.cross_over():
+                        self.direction = 1
+                        return ABMacdAction.A_RB_LONG
+                
+                else:
+                    if self.a_current_cross_state == 1:
+                        self.direction = 0
+                        return ABMacdAction.A_CLOSE_SHORT
                 
                 return self._b_handle_short()
     

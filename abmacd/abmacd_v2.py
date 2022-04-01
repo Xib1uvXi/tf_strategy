@@ -5,17 +5,13 @@ from vnpy_ctastrategy import (
     BarData,
     TradeData,
     OrderData,
-    BarGenerator,
     ArrayManager,
 )
 
 from vnpy.trader.constant import Interval
-from vnpy.trader.constant import Status
-from vnpy_ctastrategy.base import EngineType
-from abmacd_dt import MacdDecision
+from abmacd.abmacd_strategy_model import ABMacdStrategyModel
+from abmacd.ft_bargenerator import BarGenerator
 
-from barg import MACDBarGenerator
-from macd_sm import ABMacdSignalModel
 
 class ABMACDStrategy(CtaTemplate):
     """"""
@@ -34,13 +30,13 @@ class ABMACDStrategy(CtaTemplate):
     b_slow_macd0 = 0.0
     b_slow_macd1 = 0.0
 
-    size = 10.0
+    macd_lvl = ""
+    size = 0.0
     
-    tick_add = 0.0
     last_tick = None
     last_bar = None
 
-    parameters = ["fast_window", "slow_window", "signal_period", "size", "tick_add"]
+    parameters = ["fast_window", "slow_window", "signal_period", "size", "macd_lvl"]
 
     variables = ["a_fast_macd0", "a_fast_macd1", "a_slow_macd0", "a_slow_macd1", 
     "b_fast_macd0", "b_fast_macd1", "b_slow_macd0", "b_slow_macd1", "a_open_init"]
@@ -49,67 +45,32 @@ class ABMACDStrategy(CtaTemplate):
         """"""
         super().__init__(cta_engine, strategy_name, vt_symbol, setting)
 
-        # self.init_1h15min()
-        self.init_1d4h()
+        self.sm = ABMacdStrategyModel(self.buy, self.short, self.sell, self.cover, self.size, self.get_pricetick())
 
-        self.sm = ABMacdSignalModel()
-        self.dt = MacdDecision(self.buy, self.short, self.sell, self.cover)
-    
-    def init_1h15min(self):
-        # A level 
-        self.bg_a = MACDBarGenerator(self.on_bar, 1, self.on_a_level_bar, interval=Interval.HOUR)
+        self.init_bar_generator(self.macd_lvl)
+
         self.am_a = ArrayManager()
-
-        # B level
-        self.bg_b = BarGenerator(self.on_bar, 15, self.on_b_level_bar)
-        self.am_b = ArrayManager()
-    
-    def init_1d1h(self):
-        # A level 
-        self.bg_a = BarGenerator(self.on_bar, 1, self.on_a_level_bar, interval=Interval.DAILY)
-        self.am_a = ArrayManager()
-
-        # B level
-        self.bg_b = MACDBarGenerator(self.on_bar, 1, self.on_b_level_bar, interval=Interval.HOUR)
-        self.am_b = ArrayManager()
-    
-    def init_1d4h(self):
-        # A level 
-        self.bg_a = BarGenerator(self.on_bar, 1, self.on_a_level_bar, interval=Interval.DAILY)
-        self.am_a = ArrayManager()
-
-        # B level
-        self.bg_b = MACDBarGenerator(self.on_bar, 4, self.on_b_level_bar, interval=Interval.HOUR)
-        self.am_b = ArrayManager()
-    
-    # ---------------------------------
-    def init_1dx(self):
-        # A level 
-        self.bg_a = BarGenerator(self.on_bar, 1, self.on_a_level_bar, interval=Interval.DAILY)
-        self.am_a = ArrayManager()
-
-        # B level
-        # self.bg_b = MACDBarGenerator(self.on_bar, 1, self.on_b_level_bar, interval=Interval.HOUR)
-        self.bg_b = BarGenerator(self.on_bar, 50, self.on_b_level_bar)
-        self.am_b = ArrayManager()
-    
-    # ---------------------------------
-    def init_xhxm(self):
-        # A level 
-        self.bg_a = BarGenerator(self.on_bar, 2, self.on_a_level_bar, interval=Interval.HOUR)
-        self.am_a = ArrayManager()
-
-        # B level
-        self.bg_b = BarGenerator(self.on_bar, 30, self.on_b_level_bar)
         self.am_b = ArrayManager()
 
+    def init_bar_generator(self, level):
+        if level == "1d4h":
+            self.bg_a = BarGenerator(self.on_bar, 1, self.on_a_level_bar, interval=Interval.DAILY)
+            self.bg_b = BarGenerator(self.on_bar, 4, self.on_b_level_bar, interval=Interval.HOUR)
+            print("use macd level 1d4h")
+        elif level == "1d1h":
+            self.bg_a = BarGenerator(self.on_bar, 1, self.on_a_level_bar, interval=Interval.DAILY)
+            self.bg_b = BarGenerator(self.on_bar, 1, self.on_b_level_bar, interval=Interval.HOUR)
+            print("use macd level 1d1h")
+        else:
+            self.bg_a = BarGenerator(self.on_bar, 1, self.on_a_level_bar, interval=Interval.HOUR)
+            self.bg_b = BarGenerator(self.on_bar, 15, self.on_b_level_bar)
+            print("use macd level 1h15min")
 
     def on_init(self):
         """
         Callback when strategy is inited.
         """
         self.write_log("策略初始化")
-        # TODO need fix
         self.load_bar(3)
 
     def on_start(self):
@@ -145,8 +106,8 @@ class ABMACDStrategy(CtaTemplate):
         self.bg_b.update_bar(bar)
         self.bg_a.update_bar(bar)
 
-        action = self.sm.exec()
-        self.dt.dt(self.pos, action, bar.close_price, self.size)
+        self.sm.update_pos(self.pos)
+        self.sm.exec(bar.close_price)
     
     def on_order(self, order: OrderData):
         """
@@ -167,8 +128,6 @@ class ABMACDStrategy(CtaTemplate):
         pass
 
     def on_b_level_bar(self, bar: BarData):
-        # self.cancel_all()
-
         self.am_b.update_bar(bar)
         if not self.am_b.inited:
             return
@@ -177,12 +136,13 @@ class ABMACDStrategy(CtaTemplate):
         fast_macd0 = dif[-1]
         slow_macd0 = dea[-1]
 
-        self.sm.update_b_signal_value(fast_macd0, slow_macd0)
+        self.sm.update_signal(fast_macd0, slow_macd0)
+
+        ma_filter = self.am_b.sma(5, True)
+        self.sm.update_ma10filter(ma_filter[-1])
 
 
     def on_a_level_bar(self, bar: BarData):
-        # self.cancel_all()
-
         self.am_a.update_bar(bar)
         if not self.am_a.inited:
             return
@@ -193,4 +153,4 @@ class ABMACDStrategy(CtaTemplate):
 
         #print(bar.datetime, fast_macd0, slow_macd0)
 
-        self.sm.update_a_signal_value(fast_macd0, slow_macd0)
+        self.sm.update_signal(fast_macd0, slow_macd0, True)
