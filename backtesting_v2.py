@@ -1,7 +1,7 @@
 from vnpy_ctastrategy.backtesting import BacktestingEngine
 from datetime import datetime
 
-from abmacd_v2 import ABMACDStrategy
+from abmacd.abmacd_v2 import ABMACDStrategy
 
 def print_trade_data(engine: BacktestingEngine):
     trade_data = engine.get_all_trades()
@@ -46,7 +46,7 @@ ru88_1_year = run_backtesting(
     setting={'size':10, 'macd_lvl':'1d1h'}, 
     vt_symbol="RU88.SHFE",
     interval="1m", 
-    start=datetime(2012, 2, 16), 
+    start=datetime(2021, 2, 16), 
     end=datetime(2022, 2, 16),
     rate=0.45 / 10000,
     slippage=5,
