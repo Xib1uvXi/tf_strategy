@@ -11,6 +11,9 @@ class ABMacdStrategyModel:
     target_pos: float #long_back & short_back
 
     signal_model: ABMacdSignalModel
+
+    ma10filter: float
+
     last_action: ABMacdAction
 
     # open
@@ -44,7 +47,20 @@ class ABMacdStrategyModel:
             return
         
         self.signal_model.update_b_signal_value(fast_macd0, slow_macd0)
+
+    def update_ma10filter(self, ma10: float):
+        self.ma10filter = ma10
     
+    def ma_filter(self, price: float, is_long: bool) -> bool:
+        if self.ma10filter is None:
+            return False
+
+        if is_long:
+            return price > self.ma10filter
+        else:
+            return price < self.ma10filter
+
+
     def exec(self, price: float):
         action = self.signal_model.exec()
 
@@ -103,7 +119,10 @@ class ABMacdStrategyModel:
     def _handle_b_long_back(self, price: float, action):
         if self.pos != 0:
             return
-        
+
+        if not self.ma_filter(price, True):
+            return
+
         tmp_size = self.fixed_size
 
         if self.target_pos > 0:
@@ -116,6 +135,9 @@ class ABMacdStrategyModel:
     # ABMacdAction.B_OPEN_LONG_A
     def _handle_b_long(self, price: float, action):
         if self.pos < 0:
+            return
+
+        if not self.ma_filter(price, True):
             return
         
         vt_ids = self.buy(price, self.fixed_size)
@@ -150,6 +172,9 @@ class ABMacdStrategyModel:
     # ABMacdAction.B_OPEN_SHORT_A
     def _handle_b_short_back(self, price: float, action):
         if self.pos != 0:
+            return
+
+        if not self.ma_filter(price, False):
             return
         
         tmp_size = self.fixed_size

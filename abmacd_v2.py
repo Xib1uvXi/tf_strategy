@@ -57,6 +57,10 @@ class ABMACDStrategy(CtaTemplate):
             self.bg_a = BarGenerator(self.on_bar, 1, self.on_a_level_bar, interval=Interval.DAILY)
             self.bg_b = BarGenerator(self.on_bar, 4, self.on_b_level_bar, interval=Interval.HOUR)
             print("use macd level 1d4h")
+        elif level == "1d1h":
+            self.bg_a = BarGenerator(self.on_bar, 1, self.on_a_level_bar, interval=Interval.DAILY)
+            self.bg_b = BarGenerator(self.on_bar, 1, self.on_b_level_bar, interval=Interval.HOUR)
+            print("use macd level 1d1h")
         else:
             self.bg_a = BarGenerator(self.on_bar, 1, self.on_a_level_bar, interval=Interval.HOUR)
             self.bg_b = BarGenerator(self.on_bar, 15, self.on_b_level_bar)
@@ -133,6 +137,9 @@ class ABMACDStrategy(CtaTemplate):
         slow_macd0 = dea[-1]
 
         self.sm.update_signal(fast_macd0, slow_macd0)
+
+        ma_filter = self.am_b.sma(10, True)
+        self.sm.update_ma10filter(ma_filter[-1])
 
 
     def on_a_level_bar(self, bar: BarData):
