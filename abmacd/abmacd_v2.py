@@ -32,11 +32,12 @@ class ABMACDStrategy(CtaTemplate):
 
     macd_lvl = ""
     size = 0.0
+    sm_debug = False
     
     last_tick = None
     last_bar = None
 
-    parameters = ["fast_window", "slow_window", "signal_period", "size", "macd_lvl"]
+    parameters = ["fast_window", "slow_window", "signal_period", "size", "macd_lvl", "sm_debug"]
 
     variables = ["a_fast_macd0", "a_fast_macd1", "a_slow_macd0", "a_slow_macd1", 
     "b_fast_macd0", "b_fast_macd1", "b_slow_macd0", "b_slow_macd1", "size", "macd_lvl"]
@@ -48,7 +49,7 @@ class ABMACDStrategy(CtaTemplate):
         self.write_log(strategy_name)
         self.write_log(setting)
 
-        self.sm = ABMacdStrategyModel(self.buy, self.short, self.sell, self.cover, self.size, self.get_pricetick())
+        self.sm = ABMacdStrategyModel(self.buy, self.short, self.sell, self.cover, self.size, self.get_pricetick(), self.sm_debug)
 
         self.init_bar_generator(self.macd_lvl)
 

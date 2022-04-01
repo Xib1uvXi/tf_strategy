@@ -3,6 +3,8 @@ from typing import Callable
 
 
 class ABMacdStrategyModel:
+    debug: bool = False
+
     fixed_size: float
     pricetick: float
     
@@ -24,7 +26,7 @@ class ABMacdStrategyModel:
     sell: Callable
     cover: Callable
     
-    def __init__(self, buy: Callable, short: Callable, sell: Callable, cover: Callable, fixed_size: float, pricetick: float):
+    def __init__(self, buy: Callable, short: Callable, sell: Callable, cover: Callable, fixed_size: float, pricetick: float, debug: bool = False):
         self.fixed_size = fixed_size
         self.pricetick = pricetick
         
@@ -36,6 +38,8 @@ class ABMacdStrategyModel:
         self.short = short
         self.sell = sell
         self.cover = cover
+
+        self.debug = debug
 
     # update position
     def update_pos(self, pos: int):
@@ -227,7 +231,8 @@ class ABMacdStrategyModel:
 
 
     def _handle_debug(self, action, vt_ids, trade):
-        print(vt_ids, action.value, trade)
+        if self.debug:
+            print(vt_ids, action.value, trade)
         return
 
     def _rollback_cover_price(self, price: float) -> float:
