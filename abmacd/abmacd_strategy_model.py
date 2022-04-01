@@ -227,7 +227,7 @@ class ABMacdStrategyModel:
 
 
     def _handle_debug(self, action, vt_ids, trade):
-        # print(vt_ids, action.value, trade)
+        print(vt_ids, action.value, trade)
         return
 
     def _rollback_cover_price(self, price: float) -> float:
