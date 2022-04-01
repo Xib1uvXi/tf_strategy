@@ -39,7 +39,7 @@ class ABMACDStrategy(CtaTemplate):
     parameters = ["fast_window", "slow_window", "signal_period", "size", "macd_lvl"]
 
     variables = ["a_fast_macd0", "a_fast_macd1", "a_slow_macd0", "a_slow_macd1", 
-    "b_fast_macd0", "b_fast_macd1", "b_slow_macd0", "b_slow_macd1", "a_open_init"]
+    "b_fast_macd0", "b_fast_macd1", "b_slow_macd0", "b_slow_macd1", "size", "macd_lvl"]
 
     def __init__(self, cta_engine, strategy_name, vt_symbol, setting):
         """"""
