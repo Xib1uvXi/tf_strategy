@@ -44,6 +44,9 @@ class ABMACDStrategy(CtaTemplate):
     def __init__(self, cta_engine, strategy_name, vt_symbol, setting):
         """"""
         super().__init__(cta_engine, strategy_name, vt_symbol, setting)
+    
+        self.write_log(strategy_name)
+        self.write_log(setting)
 
         self.sm = ABMacdStrategyModel(self.buy, self.short, self.sell, self.cover, self.size, self.get_pricetick())
 
