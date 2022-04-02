@@ -62,7 +62,7 @@ class V2Trader(BaseTraderModel):
             return
         
         if self.pos == 0:
-            self._buy(price, self.fixed_size)
+            self._buy(price, self.fixed_size, action)
             return
         
         if self.pos < 0:
@@ -76,13 +76,13 @@ class V2Trader(BaseTraderModel):
             return
 
         if self.pos == 0:
-            self._short(price, self.fixed_size)
+            self._short(price, self.fixed_size, action)
             return
         
         if self.pos > 0:
             self._sell(price, action)
             self._reset_target_pos()
-            self._short(price, self.fixed_size)
+            self._short(price, self.fixed_size, action)
 
     # long back & short back target pos 
     def _target_pos(self) -> float:

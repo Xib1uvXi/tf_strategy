@@ -9,7 +9,7 @@ from vnpy_ctastrategy import (
 )
 
 from vnpy.trader.constant import Interval
-from abmacd.strategy_model.abmacd_strategy_model import ABMacdStrategyModel
+from abmacd.strategy_model.v2_abmacd_ma_filter import ABMacdStrategyModel
 from abmacd.ft_bargenerator import BarGenerator
 
 
@@ -115,7 +115,7 @@ class ABMACDStrategy(CtaTemplate):
         self.bg_a.update_bar(bar)
 
         self.sm.update_pos(self.pos)
-        self.sm.exec(bar.close_price)
+        self.sm.handler(bar.close_price)
     
     def on_order(self, order: OrderData):
         """
@@ -144,10 +144,10 @@ class ABMACDStrategy(CtaTemplate):
         fast_macd0 = dif[-1]
         slow_macd0 = dea[-1]
 
-        self.sm.update_signal(fast_macd0, slow_macd0)
+        self.sm.update_macd_signal(fast_macd0, slow_macd0)
 
-        ma_filter = self.am_b.sma(5, True)
-        self.sm.update_ma10filter(ma_filter[-1])
+        ma_filter = self.am_b.sma(10, True)
+        self.sm.update_ma_signal(ma_filter[-1])
 
 
     def on_a_level_bar(self, bar: BarData):
@@ -159,6 +159,4 @@ class ABMACDStrategy(CtaTemplate):
         fast_macd0 = dif[-1]
         slow_macd0 = dea[-1]
 
-        #print(bar.datetime, fast_macd0, slow_macd0)
-
-        self.sm.update_signal(fast_macd0, slow_macd0, True)
+        self.sm.update_macd_signal(fast_macd0, slow_macd0, True)
