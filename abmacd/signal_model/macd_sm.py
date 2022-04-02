@@ -1,4 +1,3 @@
-import string
 from enum import Enum
 
 class MacdSignalModel:
@@ -10,7 +9,7 @@ class MacdSignalModel:
     dea1 = 0.0
     init: int
 
-    def __init__(self, name: string):
+    def __init__(self, name: str):
         self.name = name
         self.init = 0
     
