@@ -1,4 +1,3 @@
-
 from abmacd.strategy_model.trader_model.base_trader_model import BaseTraderModel
 
 from typing import Any, Callable
@@ -12,16 +11,6 @@ class V2Trader(BaseTraderModel):
 
         self.pricetick = pricetick
         self.target_pos = 0
-
-    # pricetick
-    def _cover_price(self, price: float) -> float:
-        return price + self.pricetick
-    
-    def _sell_price(self, price: float) -> float:
-        if price - self.pricetick <= 0:
-            return price
-
-        return price - self.pricetick
 
     def _open_long(self, price: float, action: Any, is_back: bool = False, is_blvl: bool = False):
         if self.pos < 0:
@@ -66,7 +55,34 @@ class V2Trader(BaseTraderModel):
             if is_blvl:
                 self._update_target_pos(self.pos)
             self._cover(price, action)
+    
+    # TODO: 必须成交
+    def _rollback_short_to_long(self, price: float, action: Any):
+        if self.pos > 0:
+            return
+        
+        if self.pos == 0:
+            self._buy(price, self.fixed_size)
+            return
+        
+        if self.pos < 0:
+            self._cover(price, action)
+            self._reset_target_pos()
+            self._buy(price, self.fixed_size)
 
+    # TODO: 必须成交
+    def _rollback_long_to_short(self, price: float, action: Any):
+        if self.pos < 0:
+            return
+
+        if self.pos == 0:
+            self._short(price, self.fixed_size)
+            return
+        
+        if self.pos > 0:
+            self._sell(price, action)
+            self._reset_target_pos()
+            self._short(price, self.fixed_size)
 
     # long back & short back target pos 
     def _target_pos(self) -> float:
@@ -85,3 +101,13 @@ class V2Trader(BaseTraderModel):
         if pos < 0 and self.target_pos == 0:
             self.target_pos = self.target_pos + pos
     
+    
+    # pricetick
+    def _cover_price(self, price: float) -> float:
+        return price + self.pricetick
+    
+    def _sell_price(self, price: float) -> float:
+        if price - self.pricetick <= 0:
+            return price
+
+        return price - self.pricetick
