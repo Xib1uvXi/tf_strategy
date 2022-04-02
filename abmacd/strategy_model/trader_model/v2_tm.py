@@ -68,7 +68,7 @@ class V2Trader(BaseTraderModel):
         if self.pos < 0:
             self._cover(price, action)
             self._reset_target_pos()
-            self._buy(price, self.fixed_size)
+            self._buy(price, self.fixed_size, action)
 
     # TODO: 必须成交
     def _rollback_long_to_short(self, price: float, action: Any):
