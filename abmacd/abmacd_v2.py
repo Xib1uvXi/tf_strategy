@@ -9,7 +9,7 @@ from vnpy_ctastrategy import (
 )
 
 from vnpy.trader.constant import Interval
-from abmacd.abmacd_strategy_model import ABMacdStrategyModel
+from abmacd.strategy_model.abmacd_strategy_model import ABMacdStrategyModel
 from abmacd.ft_bargenerator import BarGenerator
 
 
