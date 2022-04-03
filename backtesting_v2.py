@@ -43,7 +43,7 @@ def run_backtesting(strategy_class, setting, vt_symbol, interval, start, end, ra
 # RU88
 ru88_1_year = run_backtesting(
     strategy_class=ABMACDStrategy, 
-    setting={'size':10, 'macd_lvl':'1h15min', 'sm_debug':False}, 
+    setting={'size':10, 'macd_lvl':'1h15min', 'sm_debug':True}, 
     vt_symbol="RU88.SHFE",
     interval="1m", 
     start=datetime(2021, 2, 16), 

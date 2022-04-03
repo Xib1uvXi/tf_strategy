@@ -8,7 +8,7 @@ from vnpy_ctastrategy import (
     ArrayManager,
 )
 
-from vnpy.trader.constant import Interval
+from vnpy.trader.constant import Interval, Direction, Offset
 from abmacd.strategy_model.v2_abmacd_ma_filter import ABMacdStrategyModel
 from abmacd.ft_bargenerator import BarGenerator
 
@@ -127,6 +127,19 @@ class ABMACDStrategy(CtaTemplate):
         """
         Callback of new trade data update.
         """
+        # print(trade)
+        if trade.direction is Direction.LONG and trade.offset is Offset.OPEN:
+            self.sm.long_stoploss.open(1, trade.price, trade.volume)
+        
+        if trade.direction is Direction.SHORT and trade.offset is Offset.OPEN:
+            self.sm.short_stoploss.open(-1, trade.price, trade.volume)
+
+        if trade.direction is Direction.LONG and trade.offset is Offset.CLOSE:
+            self.sm.short_stoploss.close(-1)
+        
+        if trade.direction is Direction.SHORT and trade.offset is Offset.CLOSE:
+            self.sm.long_stoploss.close(1)
+
         self.put_event()
 
     def on_stop_order(self, stop_order: StopOrder):
