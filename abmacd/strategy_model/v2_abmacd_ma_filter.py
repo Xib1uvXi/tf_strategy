@@ -50,7 +50,7 @@ class ABMacdStrategyModel:
             self.trader._close_long(price, action, is_blvl=True)
 
         elif action is ABMacdAction.B_CLOSE_SHORT:
-            self.trader._close_short(price, action, is_blvl=True)
+            self.trader._close_short(price, action)
 
         elif action is ABMacdAction.B_OPEN_LONG_A:
             if self.b_ma_filter.filter_long():

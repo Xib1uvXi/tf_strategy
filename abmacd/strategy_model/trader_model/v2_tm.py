@@ -30,8 +30,7 @@ class V2Trader(BaseTraderModel):
             return
 
         if is_back:
-            self._short(price, self._target_pos(), action)
-            self._reset_target_pos()
+            self._short(price, self.fixed_size, action)
         else:
             self._short(price, self.fixed_size, action)
 
@@ -47,13 +46,11 @@ class V2Trader(BaseTraderModel):
             self._sell(price, action)
     
     # TODO: 必须成交
-    def _close_short(self, price: float, action: Any, is_blvl: bool = False):
+    def _close_short(self, price: float, action: Any):
         if abs(self.pos) == 0:
             return
 
         if self.pos < 0:
-            if is_blvl:
-                self._update_target_pos(self.pos)
             self._cover(price, action)
     
     # TODO: 必须成交
@@ -67,7 +64,6 @@ class V2Trader(BaseTraderModel):
         
         if self.pos < 0:
             self._cover(price, action)
-            self._reset_target_pos()
             self._buy(price, self.fixed_size, action)
 
     # TODO: 必须成交
@@ -81,7 +77,6 @@ class V2Trader(BaseTraderModel):
         
         if self.pos > 0:
             self._sell(price, action)
-            self._reset_target_pos()
             self._short(price, self.fixed_size, action)
 
     # long back & short back target pos 
@@ -95,11 +90,7 @@ class V2Trader(BaseTraderModel):
         self.target_pos = 0
 
     def _update_target_pos(self, pos: int) -> None:
-        if pos > 0 and self.target_pos >= 0:
-            self.target_pos = self.target_pos + pos
-
-        if pos < 0 and self.target_pos <= 0:
-            self.target_pos = self.target_pos + pos
+        self.target_pos = pos
     
     
     # pricetick
