@@ -98,7 +98,7 @@ class V2Trader(BaseTraderModel):
         if pos > 0 and self.target_pos >= 0:
             self.target_pos = self.target_pos + pos
 
-        if pos < 0 and self.target_pos == 0:
+        if pos < 0 and self.target_pos <= 0:
             self.target_pos = self.target_pos + pos
     
     
