@@ -19,7 +19,7 @@ class ABMacdStrategyModel:
         self.trader = V2Trader(fixed_size, pricetick, buy, short, sell, cover, debug)
         self.abmacd_sm = ABMacdSignalModel()
         self.b_ma_filter = MaFilterSignalModel()
-        self.long_stoploss = Stoploss(1, 0.05)
+        self.long_stoploss = Stoploss(1, 0.01)
         self.short_stoploss = Stoploss(-1, 0.01)
 
     def update_pos(self, pos: int):
@@ -37,10 +37,10 @@ class ABMacdStrategyModel:
     
     def handler(self, price: float):
 
-        # if self.long_stoploss.need_close(price):
-        #     self.trader._sell(price, "做多止损")
-        # if self.short_stoploss.need_close(price):
-        #     self.trader._cover(price, "做空止损")
+        if self.long_stoploss.need_close(price):
+            self.trader._sell(price, "做多止损")
+        if self.short_stoploss.need_close(price):
+            self.trader._cover(price, "做空止损")
 
         action = self.abmacd_sm.exec()
         self.b_ma_filter.update_price(price)
