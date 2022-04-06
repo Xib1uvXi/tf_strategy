@@ -3,7 +3,7 @@ from vnpy_ctastrategy import (
     BarData,
     TickData,
 )
-from typing import Callable,Optional
+from typing import Callable, Optional
 from vnpy.trader.constant import Interval
 from vnpy.trader.constant import Exchange
 
@@ -164,14 +164,14 @@ class BarGenerator:
         if not self.hour_bar:
             self.new_1h_bar(bar)
             return
-        
+
         # 9：00 - 10：00
         # 21：00 - 22：00
         # 22：00 - 23：00
         if bar.datetime.hour < 10 or bar.datetime.hour >= 21:
             self.update_bar_hour_window(bar)
             return
-        
+
         finished_bar = None
 
         # If minute is ending, update minute bar into window bar and push. 11：15、14：15、15：00
@@ -195,19 +195,22 @@ class BarGenerator:
 
         # If minute bar of new hour, then push existing window bar
         elif (
-                (self.hour_bar.datetime.time() < time(11, 14) and bar.datetime.time() > time(11, 14)) 
-            or 
-                (self.hour_bar.datetime.time() < time(14, 14) and bar.datetime.time() > time(14, 14))
-            or 
-                (self.hour_bar.datetime.time() < time(14, 59) and bar.datetime.time() > time(15, 00))
-            ):
+            (self.hour_bar.datetime.time() < time(11, 14)
+             and bar.datetime.time() > time(11, 14))
+                or
+            (self.hour_bar.datetime.time() < time(14, 14)
+             and bar.datetime.time() > time(14, 14))
+                or
+            (self.hour_bar.datetime.time() < time(14, 59)
+             and bar.datetime.time() > time(15, 00))
+        ):
             finished_bar = self.hour_bar
             self.new_1h_bar(bar)
-        
+
         # Otherwise only update minute bar
         else:
             self.merge_bar(bar)
-        
+
         # Push finished window bar
         if finished_bar:
             self.on_hour_bar(finished_bar)
@@ -236,7 +239,7 @@ class BarGenerator:
                 dt = bar.datetime.replace(minute=15, second=0, microsecond=0)
         else:
             dt = bar.datetime.replace(minute=0, second=0, microsecond=0)
-        
+
         self.hour_bar = BarData(
             symbol=bar.symbol,
             exchange=bar.exchange,
@@ -366,7 +369,7 @@ class BarGenerator:
                 self.interval_count = 0
                 self.on_window_bar(self.window_bar)
                 self.window_bar = None
-        
+
     def update_bar_daily_window(self, bar: BarData) -> None:
         # If not inited, create window bar object
         if not self.hour_bar:
@@ -388,7 +391,7 @@ class BarGenerator:
 
         finished_bar = None
 
-        if bar.datetime.time() == time(14,59):
+        if bar.datetime.time() == time(14, 59):
             self.hour_bar.high_price = max(
                 self.hour_bar.high_price,
                 bar.high_price
@@ -408,7 +411,7 @@ class BarGenerator:
         elif self.hour_bar.datetime.date() != bar.datetime.date():
             dif_day = (bar.datetime - self.hour_bar.datetime).days
             # next day?
-            if dif_day < 3 and bar.datetime.time() >= time(9,0) and bar.datetime.time() < time(15,0):
+            if dif_day < 3 and bar.datetime.time() >= time(9, 0) and bar.datetime.time() < time(15, 0):
                 self.merge_bar(bar)
             else:
                 finished_bar = self.hour_bar
@@ -426,7 +429,7 @@ class BarGenerator:
                     turnover=bar.turnover,
                     open_interest=bar.open_interest
                 )
-            
+
         # Otherwise only update minute bar
         else:
             self.merge_bar(bar)
@@ -434,7 +437,6 @@ class BarGenerator:
         # Push finished window bar
         if finished_bar:
             self.on_hour_bar(finished_bar)
-
 
     def generate(self) -> Optional[BarData]:
         """
