@@ -1,8 +1,4 @@
 from vnpy_ctastrategy.backtesting import BacktestingEngine
-from datetime import datetime
-
-from abmacd.abmacd_v2 import ABMACDStrategy
-from abmacd.single_macd import SingleMACDStrategy
 
 def print_trade_data(engine: BacktestingEngine):
     trade_data = engine.get_all_trades()
@@ -12,10 +8,7 @@ def print_trade_data(engine: BacktestingEngine):
         print("order_id: ",data.orderid, "time: ", data.datetime.strftime( '%Y-%m-%d %H-%M-%S'), "action: ", data.offset.value, data.direction.value, "price: ", data.price, "amount: ", data.volume)
 
 
-#########
-
-
-def run_backtesting(strategy_class, setting, vt_symbol, interval, start, end, rate, slippage, size, pricetick, capital):
+def run_backtesting(strategy_class, setting, vt_symbol, interval, start, end, rate, slippage, size, pricetick, capital, show_trade_data=False):
     engine = BacktestingEngine()
     engine.set_parameters(
         vt_symbol=vt_symbol,
@@ -31,27 +24,14 @@ def run_backtesting(strategy_class, setting, vt_symbol, interval, start, end, ra
     engine.add_strategy(strategy_class, setting)
     engine.load_data()
     engine.run_backtesting()
-    df = engine.calculate_result()
-    engine.calculate_statistics()
-    # print_trade_data(engine)
-    return df
+    # engine.calculate_statistics()
 
-# def show_portafolio(df):
-#     engine = BacktestingEngine()
-#     engine.calculate_statistics(df)
-#     # engine.show_chart(df)
+    if show_trade_data:
+        print_trade_data(engine)
+    
+    return engine
 
-# RU88
-ru88_1_year = run_backtesting(
-    strategy_class=ABMACDStrategy, 
-    setting={'size':10, 'macd_lvl':'1h15min', 'sm_debug':False}, 
-    vt_symbol="RU88.SHFE",
-    interval="1m", 
-    start=datetime(2021, 2, 16), 
-    end=datetime(2022, 2, 16),
-    rate=0.45 / 10000,
-    slippage=5,
-    size=10,
-    pricetick=5,
-    capital=5_00_000,
-)
+def show_portafolio(df):
+    engine = BacktestingEngine()
+    engine.calculate_statistics(df)
+    engine.show_chart(df)
