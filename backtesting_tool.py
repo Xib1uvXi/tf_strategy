@@ -1,4 +1,6 @@
 from vnpy_ctastrategy.backtesting import BacktestingEngine
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 
 def print_trade_data(engine: BacktestingEngine):
@@ -38,3 +40,24 @@ def show_portafolio(df):
     engine = BacktestingEngine()
     engine.calculate_statistics(df)
     engine.show_chart(df)
+
+
+def chart(dfs):
+    data = []
+    
+    for i in dfs:
+        df = i['df']
+        balance_line = go.Scatter(
+            x=df.index,
+            y=df["balance"],
+            mode="lines",
+            name=f"Blance - {i['task']}",
+        )
+
+        data.append(balance_line)
+    
+    fig = go.Figure(data=data)
+
+    fig.update_layout(title_text="资金曲线", xaxis_title="时间", yaxis_title="资金")
+    fig.show()
+
