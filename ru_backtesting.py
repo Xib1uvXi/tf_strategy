@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from abmacd.abmacd_v2 import ABMACDStrategy
-from backtesting_tool import chart, run_backtesting, show_portafolio
+from backtesting_tool import chart, phl_chart, run_backtesting, show_portafolio
 
 one_year = {"start": datetime(2021, 2, 16),
             "end": datetime(2022, 2, 16), "period": 1}
@@ -42,8 +42,8 @@ def run(period: int, tasks):
         logs.append(log)
 
 
-# run(1, tasks)
-run(10, tasks)
+run(1, tasks)
+# run(10, tasks)
 
 print("Strategy: ABMACD")
 for log in logs:
@@ -51,3 +51,4 @@ for log in logs:
 
 
 chart(dfs)
+phl_chart(dfs)
