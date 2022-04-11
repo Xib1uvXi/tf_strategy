@@ -19,9 +19,13 @@ class ABMACDStrategy(CtaTemplate):
 
     b_ma_window = 10
 
-    fast_window = 12
-    slow_window = 26
-    signal_period = 9
+    a_fast_window = 12
+    a_slow_window = 26
+    a_signal_period = 9
+
+    b_fast_window = 12
+    b_slow_window = 26
+    b_signal_period = 9
 
     a_fast_macd0 = 0.0
     a_fast_macd1 = 0.0
@@ -39,8 +43,9 @@ class ABMACDStrategy(CtaTemplate):
     last_tick = None
     last_bar = None
 
-    parameters = ["fast_window", "slow_window",
-                  "signal_period", "size", "macd_lvl", "sm_debug", "b_ma_window"]
+    parameters = ["a_fast_window", "a_slow_window",
+                  "a_signal_period", "b_fast_window", "b_slow_window",
+                  "b_signal_period", "size", "macd_lvl", "sm_debug", "b_ma_window"]
 
     variables = ["a_fast_macd0", "a_fast_macd1", "a_slow_macd0", "a_slow_macd1",
                  "b_fast_macd0", "b_fast_macd1", "b_slow_macd0", "b_slow_macd1", "size", "macd_lvl"]
@@ -149,14 +154,14 @@ class ABMACDStrategy(CtaTemplate):
             return
 
         dif, dea, hist = self.am_b.macd(
-            self.fast_window, self.slow_window, self.signal_period, True)
+            self.b_fast_window, self.b_slow_window, self.b_signal_period, True)
         fast_macd0 = dif[-1]
         slow_macd0 = dea[-1]
 
         self.sm.update_macd_signal(fast_macd0, slow_macd0)
 
         ma_filter = self.am_b.sma(self.b_ma_window, True)
-        
+
         self.sm.update_ma_signal(ma_filter[-1])
 
     def on_a_level_bar(self, bar: BarData):
@@ -165,7 +170,7 @@ class ABMACDStrategy(CtaTemplate):
             return
 
         dif, dea, hist = self.am_a.macd(
-            self.fast_window, self.slow_window, self.signal_period, True)
+            self.a_fast_window, self.a_slow_window, self.a_signal_period, True)
         fast_macd0 = dif[-1]
         slow_macd0 = dea[-1]
 
