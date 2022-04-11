@@ -3,7 +3,7 @@ from vnpy.trader.optimize import OptimizationSetting
 
 
 if __name__ == '__main__':
-    xbt = new_default_xbt()
+    xbt = new_default_xbt(1)
 
     target = "total_return"
     optimization_setting = OptimizationSetting()

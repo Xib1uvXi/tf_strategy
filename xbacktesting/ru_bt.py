@@ -15,11 +15,11 @@ default_ru88_param_config = {
 default_bt_strategy = ABMACDStrategy
 
 
-def new_default_xbt():
+def new_default_xbt(period: int):
     strategy_setting = {'size': 10, 'macd_lvl': '1h15min',
                         'sm_debug': False, 'b_ma_window': 10}
     xbt = Xbacktesting(strategy_class=default_bt_strategy, param_config=default_ru88_param_config,
-                       period=1, strategy_setting=strategy_setting, test_name=strategy_setting['macd_lvl'])
+                       period=period, strategy_setting=strategy_setting, test_name=strategy_setting['macd_lvl'])
 
     return xbt
 
