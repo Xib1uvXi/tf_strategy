@@ -10,7 +10,6 @@ time_period_config = {
 }
 
 
-
 class Xbacktesting:
     engine: BacktestingEngine
     strategy_class: type

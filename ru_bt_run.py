@@ -1,5 +1,5 @@
 from abmacd.abmacd_v2 import ABMACDStrategy
-from xvnpy_backtesting import Xbacktesting, Xbatchbacktesting
+from xbacktesting.xvnpy_backtesting import Xbacktesting, Xbatchbacktesting
 from vnpy.trader.optimize import OptimizationSetting
 
 ru88_param_config = {
