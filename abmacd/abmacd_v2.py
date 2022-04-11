@@ -17,6 +17,8 @@ class ABMACDStrategy(CtaTemplate):
     """"""
     author = "Xib"
 
+    b_ma_window = 10
+
     fast_window = 12
     slow_window = 26
     signal_period = 9
@@ -38,7 +40,7 @@ class ABMACDStrategy(CtaTemplate):
     last_bar = None
 
     parameters = ["fast_window", "slow_window",
-                  "signal_period", "size", "macd_lvl", "sm_debug"]
+                  "signal_period", "size", "macd_lvl", "sm_debug", "b_ma_window"]
 
     variables = ["a_fast_macd0", "a_fast_macd1", "a_slow_macd0", "a_slow_macd1",
                  "b_fast_macd0", "b_fast_macd1", "b_slow_macd0", "b_slow_macd1", "size", "macd_lvl"]
@@ -153,7 +155,8 @@ class ABMACDStrategy(CtaTemplate):
 
         self.sm.update_macd_signal(fast_macd0, slow_macd0)
 
-        ma_filter = self.am_b.sma(10, True)
+        ma_filter = self.am_b.sma(self.b_ma_window, True)
+        
         self.sm.update_ma_signal(ma_filter[-1])
 
     def on_a_level_bar(self, bar: BarData):
