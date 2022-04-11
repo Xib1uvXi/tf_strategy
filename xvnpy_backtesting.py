@@ -1,5 +1,6 @@
 from pandas import DataFrame
 from vnpy_ctastrategy.backtesting import BacktestingEngine
+from vnpy.trader.optimize import OptimizationSetting
 from datetime import datetime
 import plotly.graph_objects as go
 
@@ -28,6 +29,8 @@ class Xbacktesting:
         self.period = period
         self.strategy_setting = strategy_setting
 
+        self._init_param(self.period)
+
     def _init_param(self, period: int):
         start_date = time_period_config["1"]["start"]
         end_date = time_period_config["1"]["end"]
@@ -48,8 +51,18 @@ class Xbacktesting:
             capital=self.param_config["capital"]
         )
     
+    def run_bf_optimization(self, optimization_setting: OptimizationSetting, output: bool = False):
+        self.engine.add_strategy(self.strategy_class, {})
+        results = self.engine.run_bf_optimization(optimization_setting, output=False)
+
+        if output:
+            for result in results:
+                msg: str = f"参数：{result[0]}, 目标：{result[1]}"
+                print(msg)
+
+        return results
+    
     def run_backtesting(self, output: bool = False):
-        self._init_param(self.period)
         self.engine.add_strategy(
             strategy_class=self.strategy_class,
             setting=self.strategy_setting

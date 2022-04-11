@@ -33,7 +33,7 @@ class ABMACDStrategy(CtaTemplate):
     b_slow_macd1 = 0.0
 
     macd_lvl = ""
-    size = 0.0
+    size = 10.0
     sm_debug = False
 
     last_tick = None
