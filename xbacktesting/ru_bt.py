@@ -14,8 +14,25 @@ default_ru88_param_config = {
 
 default_bt_strategy = ABMACDStrategy
 
-def new_1_year_backtesting(output: bool = False, show_chart: bool = False):
-    strategy_setting = {'size': 10, 'macd_lvl': '1h15min', 'sm_debug': False, 'b_ma_window':10}
+
+def new_default_xbt():
+    strategy_setting = {'size': 10, 'macd_lvl': '1h15min',
+                        'sm_debug': False, 'b_ma_window': 10}
+    xbt = Xbacktesting(strategy_class=default_bt_strategy, param_config=default_ru88_param_config,
+                       period=1, strategy_setting=strategy_setting, test_name=strategy_setting['macd_lvl'])
+
+    return xbt
+
+
+def new_xbt_from_strategy_setting(period: int, strategy_setting: dict):
+    xbt = Xbacktesting(strategy_class=default_bt_strategy, param_config=default_ru88_param_config,
+                       period=period, strategy_setting=strategy_setting, test_name=strategy_setting['macd_lvl'])
+    return xbt
+
+
+def _new_1_year_backtesting(output: bool = False, show_chart: bool = False):
+    strategy_setting = {'size': 10, 'macd_lvl': '1h15min',
+                        'sm_debug': False, 'b_ma_window': 10}
     xbt = Xbacktesting(strategy_class=default_bt_strategy, param_config=default_ru88_param_config,
                        period=1, strategy_setting=strategy_setting, test_name=strategy_setting['macd_lvl'])
     xbt.run_backtesting(output)
@@ -24,7 +41,8 @@ def new_1_year_backtesting(output: bool = False, show_chart: bool = False):
         xbt.show_balance_chart()
         xbt.show_phl_chart()
 
-def new_batch_1_year_3_level_backtesting(show_balance: bool = False, show_phl: bool = False):
+
+def _new_batch_1_year_3_level_backtesting(show_balance: bool = False, show_phl: bool = False):
     size = 10
     sm_debug = False
 
@@ -41,7 +59,9 @@ def new_batch_1_year_3_level_backtesting(show_balance: bool = False, show_phl: b
     batch.run_batch_backtesting(show_balance=show_balance, show_phl=show_phl)
 
 # TODO: need to add optimization
-def b_level_ma_bf_opt():
+
+
+def _b_level_ma_bf_opt():
     strategy_setting = {}
     xbt = Xbacktesting(strategy_class=default_bt_strategy, param_config=default_ru88_param_config,
                        period=1, strategy_setting=strategy_setting, test_name=strategy_setting['macd_lvl'])
