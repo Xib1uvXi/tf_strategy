@@ -71,22 +71,18 @@ class ABMACDStrategy(CtaTemplate):
                 self.on_bar, 1, self.on_a_level_bar, interval=Interval.DAILY)
             self.bg_b = BarGenerator(
                 self.on_bar, 4, self.on_b_level_bar, interval=Interval.HOUR)
-            print("use macd level 1d4h")
         elif level == "1d1h":
             self.bg_a = BarGenerator(
                 self.on_bar, 1, self.on_a_level_bar, interval=Interval.DAILY)
             self.bg_b = BarGenerator(
                 self.on_bar, 1, self.on_b_level_bar, interval=Interval.HOUR)
-            print("use macd level 1d1h")
         elif level == "15min5min":
             self.bg_a = BarGenerator(self.on_bar, 15, self.on_a_level_bar)
             self.bg_b = BarGenerator(self.on_bar, 5, self.on_b_level_bar)
-            print("use macd level 1d1h")
         else:
             self.bg_a = BarGenerator(
                 self.on_bar, 1, self.on_a_level_bar, interval=Interval.HOUR)
             self.bg_b = BarGenerator(self.on_bar, 15, self.on_b_level_bar)
-            print("use macd level 1h15min")
 
     def on_init(self):
         """
