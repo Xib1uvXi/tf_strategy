@@ -19,13 +19,9 @@ class optimizer:
     param_config: dict
     strategy_class: type
     period: int
-    optimization_setting: OptimizationSetting = None
     opt_target_filter: Callable = None
     cg_target_filter: Callable = None
-    _raw_opt_results = []
-    _filter_opt_results = []
     cg_period: int = 0
-    opt_results = []
 
     def __init__(self, strategy_class: type, param_config: dict, period: int):
         self.opt_engine = BacktestingEngine()
@@ -34,6 +30,11 @@ class optimizer:
         self.period = period
         self._init_param(self.period)
         self.opt_engine.add_strategy(self.strategy_class, {})
+
+        self._raw_opt_results = []
+        self._filter_opt_results = []
+        self.opt_results = []
+        self.optimization_setting: OptimizationSetting = None
 
     def _init_param(self, period: int):
         start_date = time_period_config["1"]["start"]
