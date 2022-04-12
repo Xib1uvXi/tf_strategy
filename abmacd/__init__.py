@@ -1,3 +1,3 @@
-import abmacd.signal_model
+import abmacd.strategy_model
 
 name = "abmacd"

@@ -9,7 +9,7 @@ from vnpy_ctastrategy import (
 )
 
 from vnpy.trader.constant import Interval
-from abmacd.abmacd_strategy_model import ABMacdStrategyModel
+from abmacd.strategy_model.v2_abmacd_ma_filter import ABMacdStrategyModel
 from abmacd.ft_bargenerator import BarGenerator
 
 
@@ -17,9 +17,15 @@ class ABMACDStrategy(CtaTemplate):
     """"""
     author = "Xib"
 
-    fast_window = 12
-    slow_window = 26
-    signal_period = 9
+    b_ma_window = 10
+
+    a_fast_window = 12
+    a_slow_window = 26
+    a_signal_period = 9
+
+    b_fast_window = 12
+    b_slow_window = 26
+    b_signal_period = 9
 
     a_fast_macd0 = 0.0
     a_fast_macd1 = 0.0
@@ -31,25 +37,28 @@ class ABMACDStrategy(CtaTemplate):
     b_slow_macd1 = 0.0
 
     macd_lvl = ""
-    size = 0.0
+    size = 10.0
     sm_debug = False
-    
+
     last_tick = None
     last_bar = None
 
-    parameters = ["fast_window", "slow_window", "signal_period", "size", "macd_lvl", "sm_debug"]
+    parameters = ["a_fast_window", "a_slow_window",
+                  "a_signal_period", "b_fast_window", "b_slow_window",
+                  "b_signal_period", "size", "macd_lvl", "sm_debug", "b_ma_window"]
 
-    variables = ["a_fast_macd0", "a_fast_macd1", "a_slow_macd0", "a_slow_macd1", 
-    "b_fast_macd0", "b_fast_macd1", "b_slow_macd0", "b_slow_macd1", "size", "macd_lvl"]
+    variables = ["a_fast_macd0", "a_fast_macd1", "a_slow_macd0", "a_slow_macd1",
+                 "b_fast_macd0", "b_fast_macd1", "b_slow_macd0", "b_slow_macd1", "size", "macd_lvl"]
 
     def __init__(self, cta_engine, strategy_name, vt_symbol, setting):
         """"""
         super().__init__(cta_engine, strategy_name, vt_symbol, setting)
-    
+
         self.write_log(strategy_name)
         self.write_log(setting)
 
-        self.sm = ABMacdStrategyModel(self.buy, self.short, self.sell, self.cover, self.size, self.get_pricetick(), self.sm_debug)
+        self.sm = ABMacdStrategyModel(
+            self.buy, self.short, self.sell, self.cover, self.size, self.get_pricetick(), self.sm_debug)
 
         self.init_bar_generator(self.macd_lvl)
 
@@ -58,21 +67,22 @@ class ABMACDStrategy(CtaTemplate):
 
     def init_bar_generator(self, level):
         if level == "1d4h":
-            self.bg_a = BarGenerator(self.on_bar, 1, self.on_a_level_bar, interval=Interval.DAILY)
-            self.bg_b = BarGenerator(self.on_bar, 4, self.on_b_level_bar, interval=Interval.HOUR)
-            print("use macd level 1d4h")
+            self.bg_a = BarGenerator(
+                self.on_bar, 1, self.on_a_level_bar, interval=Interval.DAILY)
+            self.bg_b = BarGenerator(
+                self.on_bar, 4, self.on_b_level_bar, interval=Interval.HOUR)
         elif level == "1d1h":
-            self.bg_a = BarGenerator(self.on_bar, 1, self.on_a_level_bar, interval=Interval.DAILY)
-            self.bg_b = BarGenerator(self.on_bar, 1, self.on_b_level_bar, interval=Interval.HOUR)
-            print("use macd level 1d1h")
+            self.bg_a = BarGenerator(
+                self.on_bar, 1, self.on_a_level_bar, interval=Interval.DAILY)
+            self.bg_b = BarGenerator(
+                self.on_bar, 1, self.on_b_level_bar, interval=Interval.HOUR)
         elif level == "15min5min":
             self.bg_a = BarGenerator(self.on_bar, 15, self.on_a_level_bar)
             self.bg_b = BarGenerator(self.on_bar, 5, self.on_b_level_bar)
-            print("use macd level 1d1h")
         else:
-            self.bg_a = BarGenerator(self.on_bar, 1, self.on_a_level_bar, interval=Interval.HOUR)
+            self.bg_a = BarGenerator(
+                self.on_bar, 1, self.on_a_level_bar, interval=Interval.HOUR)
             self.bg_b = BarGenerator(self.on_bar, 15, self.on_b_level_bar)
-            print("use macd level 1h15min")
 
     def on_init(self):
         """
@@ -103,7 +113,6 @@ class ABMACDStrategy(CtaTemplate):
         self.bg_b.update_tick(tick)
         self.bg_a.update_tick(tick)
 
-
     def on_bar(self, bar: BarData):
         """
         Callback of new bar data update.
@@ -115,8 +124,8 @@ class ABMACDStrategy(CtaTemplate):
         self.bg_a.update_bar(bar)
 
         self.sm.update_pos(self.pos)
-        self.sm.exec(bar.close_price)
-    
+        self.sm.handler(bar.close_price)
+
     def on_order(self, order: OrderData):
         """
         Callback of new order data update.
@@ -140,25 +149,25 @@ class ABMACDStrategy(CtaTemplate):
         if not self.am_b.inited:
             return
 
-        dif, dea, hist = self.am_b.macd(self.fast_window, self.slow_window, self.signal_period, True)
+        dif, dea, hist = self.am_b.macd(
+            self.a_fast_window, self.a_slow_window, self.a_signal_period, True)
         fast_macd0 = dif[-1]
         slow_macd0 = dea[-1]
 
-        self.sm.update_signal(fast_macd0, slow_macd0)
+        self.sm.update_macd_signal(fast_macd0, slow_macd0)
 
-        ma_filter = self.am_b.sma(5, True)
-        self.sm.update_ma10filter(ma_filter[-1])
+        ma_filter = self.am_b.sma(self.b_ma_window, True)
 
+        self.sm.update_ma_signal(ma_filter[-1])
 
     def on_a_level_bar(self, bar: BarData):
         self.am_a.update_bar(bar)
         if not self.am_a.inited:
             return
 
-        dif, dea, hist = self.am_a.macd(self.fast_window, self.slow_window, self.signal_period, True)
+        dif, dea, hist = self.am_a.macd(
+            self.a_fast_window, self.a_slow_window, self.a_signal_period, True)
         fast_macd0 = dif[-1]
         slow_macd0 = dea[-1]
 
-        #print(bar.datetime, fast_macd0, slow_macd0)
-
-        self.sm.update_signal(fast_macd0, slow_macd0, True)
+        self.sm.update_macd_signal(fast_macd0, slow_macd0, True)

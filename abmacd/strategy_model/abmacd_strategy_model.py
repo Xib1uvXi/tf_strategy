@@ -1,4 +1,4 @@
-from abmacd.signal_model.macd_sm import ABMacdAction, ABMacdSignalModel
+from abmacd.strategy_model.signal_model.macd_sm import ABMacdAction, ABMacdSignalModel
 from typing import Callable
 
 
