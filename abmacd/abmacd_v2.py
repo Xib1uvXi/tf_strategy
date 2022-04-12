@@ -150,7 +150,7 @@ class ABMACDStrategy(CtaTemplate):
             return
 
         dif, dea, hist = self.am_b.macd(
-            self.b_fast_window, self.b_slow_window, self.b_signal_period, True)
+            self.a_fast_window, self.a_slow_window, self.a_signal_period, True)
         fast_macd0 = dif[-1]
         slow_macd0 = dea[-1]
 

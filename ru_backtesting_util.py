@@ -1,3 +1,4 @@
+from xmlrpc.client import Boolean
 from abmacd.abmacd_v2 import ABMACDStrategy
 from xbacktesting.x_optimizer import optimizer
 from xbacktesting.xvnpy_backtesting import Xbacktesting, Xbatchbacktesting
@@ -38,6 +39,27 @@ def new_default_optimizer():
 def opt_target_filter_by_annual_return(raw_opt_results: list):
     filter_result = []
     for opt_result in raw_opt_results:
+        if opt_result[1] > 15:
+            filter_result.append(opt_result)
+    
+    return filter_result
+
+def macd_param_check_skip(raw_param: str) -> bool:
+    param = eval(raw_param)
+    _a_slow_window = param["a_slow_window"]
+    _a_fast_window = param["a_fast_window"]
+    if _a_slow_window - _a_fast_window < 10:
+        return True
+
+    return False
+
+
+def opt_target_filter_by_annual_return_macd(raw_opt_results: list):
+    filter_result = []
+    for opt_result in raw_opt_results:
+        if macd_param_check_skip(opt_result[0]):
+            continue
+
         if opt_result[1] > 15:
             filter_result.append(opt_result)
     
