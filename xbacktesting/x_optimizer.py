@@ -87,8 +87,24 @@ class optimizer:
         
         print("优化完成")
 
+        self._show_opt_result()
+
+    def _show_opt_result(self):
+
+        if len(self.opt_results) == 0:
+            print("没有优化结果")
+            return
+
         for result in self.opt_results:
-            print(result)
+            self._sc_out_v1(result)
+
+    
+    def _sc_out_v1(self, result):
+        opt_msg = f"周期:{self.period}\t 参数:{result['strategy_setting']}\t 年化收益:{result['opt_result']['annual_return']:,.2f}%\t 最大百分比回撤:{result['opt_result']['max_ddpercent']:,.2f}%\t 夏普率:{result['opt_result']['sharpe_ratio']:,.2f}\t 交易笔数:{result['opt_result']['total_trade_count']}"
+        print(opt_msg)
+        cg_msg = f"周期:{self.cg_period}\t 参数:{result['strategy_setting']}\t 年化收益:{result['cg_result']['annual_return']:,.2f}%\t 最大百分比回撤:{result['cg_result']['max_ddpercent']:,.2f}%\t 夏普率:{result['cg_result']['sharpe_ratio']:,.2f}\t 交易笔数:{result['cg_result']['total_trade_count']}"
+        print(cg_msg)
+        print('              ')
 
     def _run_optimization(self, output: bool = False):
         results = self.opt_engine.run_bf_optimization(
@@ -110,7 +126,7 @@ class optimizer:
         cg_xbt.run_backtesting()
 
         if self._check_cg_bt_statistics(cg_xbt._statistics):
-            result = {"strategy_setting": filter_result[0], "opt_result": filter_result[1], "cg_result": cg_xbt._statistics}
+            result = {"strategy_setting": filter_result[0], "opt_result": filter_result[2], "cg_result": cg_xbt._statistics}
             self.opt_results.append(result)
 
     def _check_cg_bt_statistics(self, cg_bt_statistics: dict):

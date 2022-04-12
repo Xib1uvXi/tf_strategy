@@ -1,15 +1,18 @@
-from xbacktesting.ru_bt import new_default_xbt
+from ru_backtesting_util import cg_target_filter_by_annual_return, new_default_optimizer, opt_target_filter_by_annual_return
 from vnpy.trader.optimize import OptimizationSetting
 
 
+def run_opt_b_ma_window_annual_retrun():
+    opt = new_default_optimizer()
+    opt_setting = OptimizationSetting()
+    opt_setting.set_target('annual_return')
+    opt_setting.params['macd_lvl'] = ['1h15min']
+    opt_setting.add_parameter('b_ma_window', 60, 66, 1)
+
+    opt.set_optimization_setting(opt_setting, opt_target_filter_by_annual_return)
+    opt.set_cg_setting(10, cg_target_filter_by_annual_return)
+
+    opt.run_opt()
+
 if __name__ == '__main__':
-    xbt = new_default_xbt(1)
-
-    target = "total_return"
-    optimization_setting = OptimizationSetting()
-    optimization_setting.set_target(target)
-
-    optimization_setting.add_parameter("b_ma_window", 3, 66, 1)
-
-    retults = xbt.run_bf_optimization(optimization_setting)
-    print(f"best result\t 参数：{retults[0][0]}, 结果：{target}: {retults[0][1]}")
+    run_opt_b_ma_window_annual_retrun()

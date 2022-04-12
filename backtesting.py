@@ -1,5 +1,5 @@
 
-from xbacktesting.ru_bt import new_xbt_from_strategy_setting
+from ru_backtesting_util import new_xbt_from_strategy_setting
 
 
 if __name__ == '__main__':
