@@ -30,8 +30,19 @@ def run_opt_macd_window_annual_retrun():
         opt.set_cg_setting(10, cg_target_filter_by_annual_return)
         opt.run_opt()
 
+def run_opt_macd_window_annual_retrun111():
+    opt = new_default_optimizer()
+    opt_setting = OptimizationSetting()
+    opt_setting.set_target('annual_return')
+    opt_setting.params['macd_lvl'] = ['1d4h']
+    opt_setting.add_parameter('a_fast_window', 10, 30, 1)
+    opt_setting.add_parameter('a_slow_window', 20, 50, 1)
+    opt_setting.add_parameter('a_signal_period', 5, 20, 1)
+    opt.set_optimization_setting(opt_setting, opt_target_filter_by_annual_return_macd)
+    opt.set_cg_setting(10, cg_target_filter_by_annual_return)
+    opt.run_opt()
 
 
 if __name__ == '__main__':
 #    run_opt_b_ma_window_annual_retrun()
-    run_opt_macd_window_annual_retrun()
+    run_opt_macd_window_annual_retrun111()

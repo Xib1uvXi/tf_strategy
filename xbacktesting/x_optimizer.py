@@ -1,10 +1,9 @@
-from curses import raw
-import re
 from typing import Callable
-from unittest import result
 from vnpy_ctastrategy.backtesting import BacktestingEngine
 from datetime import datetime
 from vnpy.trader.optimize import OptimizationSetting
+
+import time
 
 from xbacktesting.xvnpy_backtesting import Xbacktesting
 
@@ -82,9 +81,9 @@ class optimizer:
             exit()
 
         self._run_optimization()
-        if len(self._filter_opt_results) > 0:
-            for fr in self._filter_opt_results:
-                self._cg_bt(fr)
+
+        for fr in self._filter_opt_results:
+            self._cg_bt(fr)
         
         print("优化完成")
 
