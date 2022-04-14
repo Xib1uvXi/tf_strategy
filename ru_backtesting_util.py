@@ -71,3 +71,36 @@ def cg_target_filter_by_annual_return(cg_bt_statistics: dict):
         return True
     
     return False
+
+
+def gen_opt_b_macd_window_opt_tasks(f,s,p):
+    opt = optimizer(default_bt_strategy, default_ru88_param_config, 10)
+    opt_setting = OptimizationSetting()
+    opt_setting.set_target('annual_return')
+    opt_setting.params['macd_lvl'] = ['1h15min']
+    opt_setting.params['a_fast_window'] = [f]
+    opt_setting.params['a_slow_window'] = [s]
+    opt_setting.params['a_signal_period'] = [p]
+    opt_setting.add_parameter('b_fast_window', 3, 30, 1)
+    opt_setting.add_parameter('b_slow_window', 13, 50, 1)
+    opt_setting.add_parameter('b_signal_period', 5, 20, 1)
+    opt.set_optimization_setting(opt_setting, opt_target_filter_by_annual_return_20)
+    opt.set_cg_setting(1, cg_target_filter_by_annual_return_15)
+    return opt
+
+def opt_target_filter_by_annual_return_20(raw_opt_results: list):
+    filter_result = []
+    for opt_result in raw_opt_results:
+        if macd_param_check_skip(opt_result[0]):
+            continue
+
+        if opt_result[1] > 20:
+            filter_result.append(opt_result)
+    
+    return filter_result
+
+def cg_target_filter_by_annual_return_15(cg_bt_statistics: dict):
+    if cg_bt_statistics['annual_return'] > 15:
+        return True
+    
+    return False

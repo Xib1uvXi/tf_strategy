@@ -20,7 +20,7 @@ class optimizer:
     period: int
     opt_target_filter: Callable = None
     cg_target_filter: Callable = None
-    cg_period: int = 0
+    
 
     def __init__(self, strategy_class: type, param_config: dict, period: int):
         self.opt_engine = BacktestingEngine()
@@ -30,6 +30,7 @@ class optimizer:
         self._init_param(self.period)
         self.opt_engine.add_strategy(self.strategy_class, {})
 
+        self.cg_period: int = 0
         self._raw_opt_results = []
         self._filter_opt_results = []
         self.opt_results = []
@@ -104,7 +105,7 @@ class optimizer:
         print(opt_msg)
         cg_msg = f"周期:{self.cg_period}\t 参数:{result['strategy_setting']}\t 年化收益:{result['cg_result']['annual_return']:,.2f}%\t 最大百分比回撤:{result['cg_result']['max_ddpercent']:,.2f}%\t 夏普率:{result['cg_result']['sharpe_ratio']:,.2f}\t 交易笔数:{result['cg_result']['total_trade_count']}"
         print(cg_msg)
-        print('              ')
+        # print('              ')
 
     def _run_optimization(self, output: bool = False):
         results = self.opt_engine.run_bf_optimization(
