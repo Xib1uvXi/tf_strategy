@@ -73,6 +73,23 @@ def cg_target_filter_by_annual_return(cg_bt_statistics: dict):
     return False
 
 
+def gen_opt_macd_window_b_ma_opt_tasks(a_f,a_s,a_p, b_f,b_s,b_p):
+    opt = optimizer(default_bt_strategy, default_ru88_param_config, 10)
+    opt_setting = OptimizationSetting()
+    opt_setting.set_target('annual_return')
+    opt_setting.params['macd_lvl'] = ['1h15min']
+    opt_setting.params['a_fast_window'] = [a_f]
+    opt_setting.params['a_slow_window'] = [a_s]
+    opt_setting.params['a_signal_period'] = [a_p]
+    opt_setting.params['b_fast_window'] = [b_f]
+    opt_setting.params['b_slow_window'] = [b_s]
+    opt_setting.params['b_signal_period'] = [b_p]
+    opt_setting.add_parameter('b_ma_window', 3, 66, 1) 
+    opt.set_optimization_setting(opt_setting, opt_target_filter_by_annual_return_20)
+    opt.set_cg_setting(1, cg_target_filter_by_annual_return_15)
+    return opt
+
+
 def gen_opt_b_macd_window_opt_tasks(f,s,p):
     opt = optimizer(default_bt_strategy, default_ru88_param_config, 10)
     opt_setting = OptimizationSetting()
