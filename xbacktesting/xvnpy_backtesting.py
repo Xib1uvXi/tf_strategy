@@ -1,14 +1,9 @@
 from pandas import DataFrame
 from vnpy_ctastrategy.backtesting import BacktestingEngine
 from vnpy.trader.optimize import OptimizationSetting
-from datetime import datetime
 import plotly.graph_objects as go
 
-time_period_config = {
-    "1": {"start": datetime(2021, 2, 16), "end": datetime(2022, 2, 16)},
-    "10": {"start": datetime(2012, 2, 16), "end": datetime(2022, 2, 16)},
-}
-
+from xbacktesting.timer import bttimer
 
 class Xbacktesting:
     engine: BacktestingEngine
@@ -31,18 +26,14 @@ class Xbacktesting:
         self._init_param(self.period)
 
     def _init_param(self, period: int):
-        start_date = time_period_config["1"]["start"]
-        end_date = time_period_config["1"]["end"]
         
-        if period == 10:
-            start_date = time_period_config["10"]["start"]
-            end_date = time_period_config["10"]["end"]
-        
+        btt = bttimer(period)
+
         self.engine.set_parameters(
             vt_symbol=self.param_config["vt_symbol"],
             interval=self.param_config["interval"],
-            start=start_date,
-            end=end_date,
+            start=btt.start_date,
+            end=btt.end_date,
             rate=self.param_config["rate"],
             slippage=self.param_config["slippage"],
             size=self.param_config["size"],
