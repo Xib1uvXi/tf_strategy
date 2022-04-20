@@ -145,6 +145,9 @@ class ABMACDStrategy(CtaTemplate):
                     self.cover(bar.close_price, abs(self.pos))
             
             return True
+        elif (m == 7 and bar.datetime.day in [26,27,28]) or (m == 12 and bar.datetime.day in [26,27,28]) or (m == 4 and bar.datetime.day in [25,26,27]):
+            self.sm.only_close_handler(bar.close_price)
+            return True
 
         return False
 

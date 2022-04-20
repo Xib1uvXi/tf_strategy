@@ -43,6 +43,40 @@ class ABMacdStrategyModel:
         if self.short_stoploss.need_close(price):
             self.trader._cover(price, "做空止损")
 
+    def only_close_handler(self, price: float):
+        if self.stoploss_enabled:
+            self._handle_stoploss(price)
+
+        action = self.abmacd_sm.exec()
+        self.b_ma_filter.update_price(price)
+
+        # filter EMPTY ACTION
+        if action is ABMacdAction.EMPTY:
+            self.last_action = action
+            return
+        
+        # other filter??
+        if action is ABMacdAction.B_CLOSE_LONG:
+            self.trader._close_long(price, action, is_blvl=True)
+
+        elif action is ABMacdAction.B_CLOSE_SHORT:
+            self.trader._close_short(price, action)
+        
+        # elif action is ABMacdAction.B_CLOSE_SHORT_V2:
+        #     self.trader._close_short(price, action)
+
+        elif action is ABMacdAction.A_RB_LONG:
+            self.trader._close_short(price, action)
+
+        elif action is ABMacdAction.A_RB_SHORT:
+            self.trader._rollback_long_to_short(price, action)
+        
+        elif action is ABMacdAction.A_CLOSE_SHORT:
+            self.trader._close_long(price, action, is_blvl=False)
+        
+        self.last_action = action
+        return
+
 
     def handler(self, price: float):
         if self.stoploss_enabled:
