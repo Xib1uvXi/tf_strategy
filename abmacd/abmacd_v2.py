@@ -130,6 +130,7 @@ class ABMACDStrategy(CtaTemplate):
         if self._m_swap(bar):
             return
 
+        # TODO 需要加入只能平仓动作的判断
         self.sm.handler(bar.close_price)
 
     def _m_swap(self, bar: BarData) -> bool:
