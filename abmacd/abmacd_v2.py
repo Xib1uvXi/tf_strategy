@@ -126,7 +126,26 @@ class ABMACDStrategy(CtaTemplate):
         self.bg_a.update_bar(bar)
 
         self.sm.update_pos(self.pos)
+
+        if self._m_swap(bar):
+            return
+
         self.sm.handler(bar.close_price)
+
+    def _m_swap(self, bar: BarData) -> bool:
+        m = bar.datetime.month
+
+        if (m == 7 and bar.datetime.day in [29,30,31]) or (m == 12 and bar.datetime.day in [29,30,31]) or (m == 4 and bar.datetime.day in [28,29,30]):
+            if self.pos != 0:
+                if self.pos > 0:
+                    self.sell(bar.close_price, abs(self.pos))
+                
+                if self.pos < 0:
+                    self.cover(bar.close_price, abs(self.pos))
+            
+            return True
+
+        return False
 
     def on_order(self, order: OrderData):
         """

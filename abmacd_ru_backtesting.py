@@ -13,6 +13,8 @@ def _run_bt(period_config, strategy_setting, msg):
     xbt.run_backtesting(output=True)
     if strategy_setting['sm_debug']:
         xbt.show_trade_data()
+        xbt.show_phl_chart()
+        xbt.show_balance_chart()
 
 
 def default_train_bt():
