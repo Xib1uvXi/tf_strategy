@@ -11,6 +11,7 @@ def gen_test_name(pc, msg):
 def _run_bt(period_config, strategy_setting, msg):
     xbt = Xbacktesting(strategy_class=default_bt_strategy, param_config=default_ru88_param_config,period_config=period_config,strategy_setting=strategy_setting, test_name=gen_test_name(period_config, msg))
     xbt.run_backtesting(output=True)
+    xbt.show_trade_data()
 
 
 def default_train_bt():
@@ -27,7 +28,7 @@ def default_train_bt():
     2022-04-20 16:12:08.934542      收益回撤比：    -0.34
     """
 
-    strategy_setting = {'size': 10,'sm_debug': False, 'macd_lvl': '1h15min'}
+    strategy_setting = {'size': 10,'sm_debug': True, 'macd_lvl': '1h15min'}
     period_config = {"start": datetime(2020, 1, 1), "end": datetime(2020, 12, 31), "period": "1"}
     _run_bt(period_config, strategy_setting, "default_train_bt")
 
@@ -49,4 +50,4 @@ def default_enable_stoploss_2_bt():
     _run_bt(period_config, strategy_setting, "default_enable_stoploss_1_bt")
 
 if __name__ == '__main__':
-    default_enable_stoploss_2_bt()
+    default_train_bt()
