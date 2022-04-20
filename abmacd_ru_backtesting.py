@@ -48,9 +48,10 @@ def default_enable_stoploss_2_bt():
     2022-04-20 16:23:12.701671      Sharpe Ratio：  -0.34
     2022-04-20 16:23:12.701678      收益回撤比：    -0.32
     """
-    strategy_setting = {'size': 10,'sm_debug': False, 'macd_lvl': '1h15min', 'stoploss_enable': True}
+    strategy_setting = {'size': 10,'sm_debug': True, 'macd_lvl': '1h15min', 'stoploss_enable': True}
+    # strategy_setting = {'size': 10,'sm_debug': True, 'macd_lvl': '1h15min', 'stoploss_enable': True, 'a_fast_window': 22, 'a_signal_period': 7, 'a_slow_window': 33, 'b_fast_window': 2, 'b_slow_window': 16, 'b_signal_period': 19, 'b_ma_window': 16}
     period_config = {"start": datetime(2020, 1, 1), "end": datetime(2020, 12, 31), "period": "1"}
     _run_bt(period_config, strategy_setting, "default_enable_stoploss_1_bt")
 
 if __name__ == '__main__':
-    default_train_bt()
+    default_enable_stoploss_2_bt()
