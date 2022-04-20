@@ -240,6 +240,10 @@ class BarGenerator:
         else:
             dt = bar.datetime.replace(minute=0, second=0, microsecond=0)
 
+        if dt is None:
+            print(f"[ERROR] new_1h_bar: dt is None, bar: {bar}, last_tick: {self.last_tick}")
+            return
+
         self.hour_bar = BarData(
             symbol=bar.symbol,
             exchange=bar.exchange,
