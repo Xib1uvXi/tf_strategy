@@ -8,7 +8,7 @@ from vnpy_ctastrategy import (
     ArrayManager,
 )
 
-from vnpy.trader.constant import Interval
+from vnpy.trader.constant import Interval, Direction, Offset
 from abmacd.strategy_model.v2_abmacd_ma_filter import ABMacdStrategyModel
 from abmacd.ft_bargenerator import BarGenerator
 
@@ -16,6 +16,8 @@ from abmacd.ft_bargenerator import BarGenerator
 class ABMACDStrategy(CtaTemplate):
     """"""
     author = "Xib"
+
+    stoploss_enable = False
 
     b_ma_window = 10
 
@@ -45,7 +47,7 @@ class ABMACDStrategy(CtaTemplate):
 
     parameters = ["a_fast_window", "a_slow_window",
                   "a_signal_period", "b_fast_window", "b_slow_window",
-                  "b_signal_period", "size", "macd_lvl", "sm_debug", "b_ma_window"]
+                  "b_signal_period", "size", "macd_lvl", "sm_debug", "b_ma_window", "stoploss_enable"]
 
     variables = ["a_fast_macd0", "a_fast_macd1", "a_slow_macd0", "a_slow_macd1",
                  "b_fast_macd0", "b_fast_macd1", "b_slow_macd0", "b_slow_macd1", "size", "macd_lvl"]
@@ -58,7 +60,7 @@ class ABMACDStrategy(CtaTemplate):
         self.write_log(setting)
 
         self.sm = ABMacdStrategyModel(
-            self.buy, self.short, self.sell, self.cover, self.size, self.get_pricetick(), self.sm_debug)
+            self.buy, self.short, self.sell, self.cover, self.size, self.get_pricetick(), self.stoploss_enable, self.sm_debug)
 
         self.init_bar_generator(self.macd_lvl)
 
@@ -136,7 +138,24 @@ class ABMACDStrategy(CtaTemplate):
         """
         Callback of new trade data update.
         """
+        # print(trade)
+        if self.stoploss_enable:
+            self._update_stoploss_by_trade(trade)
+
         self.put_event()
+
+    def _update_stoploss_by_trade(self, trade: TradeData):
+        if trade.direction is Direction.LONG and trade.offset is Offset.OPEN:
+            self.sm.long_stoploss.open(1, trade.price, trade.volume)
+        
+        if trade.direction is Direction.SHORT and trade.offset is Offset.OPEN:
+            self.sm.short_stoploss.open(-1, trade.price, trade.volume)
+
+        if trade.direction is Direction.LONG and trade.offset is Offset.CLOSE:
+            self.sm.short_stoploss.close(-1)
+        
+        if trade.direction is Direction.SHORT and trade.offset is Offset.CLOSE:
+            self.sm.long_stoploss.close(1)
 
     def on_stop_order(self, stop_order: StopOrder):
         """
