@@ -1,4 +1,3 @@
-from xmlrpc.client import Boolean
 from abmacd.abmacd_v2 import ABMACDStrategy
 from xbacktesting.x_optimizer import optimizer
 from xbacktesting.xvnpy_backtesting import Xbacktesting, Xbatchbacktesting

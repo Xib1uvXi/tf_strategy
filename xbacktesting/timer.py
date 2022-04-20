@@ -13,10 +13,16 @@ time_period_config = {
     "10": {"start": datetime(2012, 2, 16), "end": datetime(2022, 2, 16)},
 }
 
+three_year_period_config = {
+    "1": {"start": datetime(2021, 2, 16), "end": datetime(2022, 2, 16)},
+    "3": {"start": datetime(2018, 2, 16), "end": datetime(2021, 2, 16)},
+    "4": {"start": datetime(2019, 2, 16), "end": datetime(2022, 2, 16)},
+}
+
 class bttimer:
     start_date: datetime
     end_date: datetime
 
     def __init__(self, period: int) -> None:
-        self.start_date = time_period_config[str(period)]["start"]
-        self.end_date = time_period_config[str(period)]["end"]
+        self.start_date = three_year_period_config[str(period)]["start"]
+        self.end_date = three_year_period_config[str(period)]["end"]

@@ -1,6 +1,8 @@
 from ru_backtesting_util import cg_target_filter_by_annual_return, gen_opt_b_macd_window_opt_tasks, gen_opt_macd_window_b_ma_opt_tasks, new_default_optimizer, opt_target_filter_by_annual_return, opt_target_filter_by_annual_return_macd
 from vnpy.trader.optimize import OptimizationSetting
 
+from ru_opt_full_param_util import gen_opt_tasks_33, gen_opt_tasks_34
+
 
 def run_opt_b_ma_window_annual_retrun():
     lvls = ['1h15min', '1d1h', '1d4h']
@@ -157,6 +159,11 @@ def run_opt_b_ma_window_by_no_eq_a_macd_window_annual_retrun():
         opt.run_opt()
 
 
+def ru_3y_full_opt():
+    gen_opt_tasks_34()
+    
+
 if __name__ == '__main__':
-#    run_opt_b_ma_window_annual_retrun()
-    run_opt_b_ma_window_by_no_eq_a_macd_window_annual_retrun()
+    # run_opt_b_ma_window_annual_retrun()
+    # run_opt_b_ma_window_by_no_eq_a_macd_window_annual_retrun()
+    ru_3y_full_opt()
