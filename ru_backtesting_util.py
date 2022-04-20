@@ -2,6 +2,7 @@ from abmacd.abmacd_v2 import ABMACDStrategy
 from xbacktesting.x_optimizer import optimizer
 from xbacktesting.xvnpy_backtesting import Xbacktesting, Xbatchbacktesting
 from vnpy.trader.optimize import OptimizationSetting
+from datetime import datetime
 
 default_ru88_param_config = {
     "vt_symbol": "RU88.SHFE",
@@ -16,22 +17,14 @@ default_ru88_param_config = {
 default_bt_strategy = ABMACDStrategy
 
 
-def new_default_xbt(period: int):
-    strategy_setting = {'size': 10, 'macd_lvl': '1h15min',
-                        'sm_debug': False, 'b_ma_window': 10}
+
+def new_xbt_from_strategy_setting(period: dict, strategy_setting: dict):
     xbt = Xbacktesting(strategy_class=default_bt_strategy, param_config=default_ru88_param_config,
-                       period=period, strategy_setting=strategy_setting, test_name=strategy_setting['macd_lvl'])
-
-    return xbt
-
-
-def new_xbt_from_strategy_setting(period: int, strategy_setting: dict):
-    xbt = Xbacktesting(strategy_class=default_bt_strategy, param_config=default_ru88_param_config,
-                       period=period, strategy_setting=strategy_setting, test_name=strategy_setting['macd_lvl'])
+                       period_config=period, strategy_setting=strategy_setting, test_name=strategy_setting['macd_lvl'])
     return xbt
 
 def new_default_optimizer():
-    opt = optimizer(default_bt_strategy, default_ru88_param_config, 1)
+    opt = optimizer(default_bt_strategy, default_ru88_param_config, {"start": datetime(2021, 2, 16), "end": datetime(2022, 2, 16), "period": "1"})
     return opt
 
 
@@ -73,7 +66,7 @@ def cg_target_filter_by_annual_return(cg_bt_statistics: dict):
 
 
 def gen_opt_macd_window_b_ma_opt_tasks(a_f,a_s,a_p, b_f,b_s,b_p):
-    opt = optimizer(default_bt_strategy, default_ru88_param_config, 10)
+    opt = optimizer(default_bt_strategy, default_ru88_param_config, {"start": datetime(2012, 2, 16), "end": datetime(2022, 2, 16), "period": "10"})
     opt_setting = OptimizationSetting()
     opt_setting.set_target('annual_return')
     opt_setting.params['macd_lvl'] = ['1h15min']
@@ -85,12 +78,12 @@ def gen_opt_macd_window_b_ma_opt_tasks(a_f,a_s,a_p, b_f,b_s,b_p):
     opt_setting.params['b_signal_period'] = [b_p]
     opt_setting.add_parameter('b_ma_window', 3, 66, 1) 
     opt.set_optimization_setting(opt_setting, opt_target_filter_by_annual_return_20)
-    opt.set_cg_setting(1, cg_target_filter_by_annual_return_15)
+    opt.set_cg_setting({"start": datetime(2021, 2, 16), "end": datetime(2022, 2, 16), "period": "1"}, cg_target_filter_by_annual_return_15)
     return opt
 
 
 def gen_opt_b_macd_window_opt_tasks(f,s,p):
-    opt = optimizer(default_bt_strategy, default_ru88_param_config, 10)
+    opt = optimizer(default_bt_strategy, default_ru88_param_config, {"start": datetime(2012, 2, 16), "end": datetime(2022, 2, 16), "period": "10"})
     opt_setting = OptimizationSetting()
     opt_setting.set_target('annual_return')
     opt_setting.params['macd_lvl'] = ['1h15min']
@@ -101,7 +94,7 @@ def gen_opt_b_macd_window_opt_tasks(f,s,p):
     opt_setting.add_parameter('b_slow_window', 13, 50, 1)
     opt_setting.add_parameter('b_signal_period', 5, 20, 1)
     opt.set_optimization_setting(opt_setting, opt_target_filter_by_annual_return_20)
-    opt.set_cg_setting(1, cg_target_filter_by_annual_return_15)
+    opt.set_cg_setting({"start": datetime(2021, 2, 16), "end": datetime(2022, 2, 16), "period": "1"}, cg_target_filter_by_annual_return_15)
     return opt
 
 def opt_target_filter_by_annual_return_20(raw_opt_results: list):

@@ -3,37 +3,34 @@ from vnpy_ctastrategy.backtesting import BacktestingEngine
 from vnpy.trader.optimize import OptimizationSetting
 import plotly.graph_objects as go
 
-from xbacktesting.timer import bttimer
 
 class Xbacktesting:
     engine: BacktestingEngine
     strategy_class: type
     param_config: dict
-    period: int
+    period_config: dict
     strategy_setting: dict
     _df: DataFrame
     _statistics: dict
     _test_name: str
 
-    def __init__(self, strategy_class: type, param_config: dict, period: int, strategy_setting: dict, test_name: str):
+    def __init__(self, strategy_class: type, param_config: dict, period_config: dict, strategy_setting: dict, test_name: str):
         self.engine = BacktestingEngine()
         self.strategy_class = strategy_class
         self.param_config = param_config
         self._test_name = test_name
-        self.period = period
+        self.period_config = period_config
         self.strategy_setting = strategy_setting
 
-        self._init_param(self.period)
+        self._init_param()
 
-    def _init_param(self, period: int):
-        
-        btt = bttimer(period)
+    def _init_param(self):
 
         self.engine.set_parameters(
             vt_symbol=self.param_config["vt_symbol"],
             interval=self.param_config["interval"],
-            start=btt.start_date,
-            end=btt.end_date,
+            start=self.period_config["start"],
+            end=self.period_config["end"],
             rate=self.param_config["rate"],
             slippage=self.param_config["slippage"],
             size=self.param_config["size"],
@@ -110,7 +107,7 @@ class Xbatchbacktesting:
         for engine in self.engines:
             engine.run_backtesting()
             self.dfs.append({'df': engine._df, 'task': engine._test_name})
-            log = f"周期：{engine.period}年\t{engine._test_name}\t 年化收益：\t {engine._statistics['annual_return']:,.2f}%\t 百分比最大回撤：\t {engine._statistics['max_ddpercent']:,.2f}%\t 夏普比率：\t {engine._statistics['sharpe_ratio']:,.2f}"
+            log = f"周期：{engine.period_config['period']}年\t{engine._test_name}\t 年化收益：\t {engine._statistics['annual_return']:,.2f}%\t 百分比最大回撤：\t {engine._statistics['max_ddpercent']:,.2f}%\t 夏普比率：\t {engine._statistics['sharpe_ratio']:,.2f}"
             self.statistics_logs.append(log)
         
         for log in self.statistics_logs:
