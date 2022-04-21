@@ -18,6 +18,7 @@ class ABMACDStrategy(CtaTemplate):
     author = "Xib"
 
     stoploss_enable = False
+    mswap_enable = False
 
     b_ma_window = 10
 
@@ -47,7 +48,7 @@ class ABMACDStrategy(CtaTemplate):
 
     parameters = ["a_fast_window", "a_slow_window",
                   "a_signal_period", "b_fast_window", "b_slow_window",
-                  "b_signal_period", "size", "macd_lvl", "sm_debug", "b_ma_window", "stoploss_enable"]
+                  "b_signal_period", "size", "macd_lvl", "sm_debug", "b_ma_window", "mswap_enable", "stoploss_enable"]
 
     variables = ["a_fast_macd0", "a_fast_macd1", "a_slow_macd0", "a_slow_macd1",
                  "b_fast_macd0", "b_fast_macd1", "b_slow_macd0", "b_slow_macd1", "size", "macd_lvl"]
@@ -127,8 +128,9 @@ class ABMACDStrategy(CtaTemplate):
 
         self.sm.update_pos(self.pos)
 
-        if self._m_swap(bar):
-            return
+        if self.mswap_enable:
+            if self._m_swap(bar):
+                return
 
         # TODO 需要加入只能平仓动作的判断
         self.sm.handler(bar.close_price)
