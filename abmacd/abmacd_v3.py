@@ -14,20 +14,22 @@ from vnpy_ctastrategy import (
 from abmacd.ft_bargenerator import BarGenerator
 from vnpy.trader.constant import Interval
 
+
 @dataclass
 class ABMACDStrategyConfig:
-    mswap_enable: bool
+    mswap_enable: bool = False
     # b_ma_window
-    b_ma_window: int
+    b_ma_window: int = 10
 
-    a_fast_window: int
-    a_slow_window: int
-    a_signal_period: int
-    b_fast_window: int
-    b_slow_window: int
-    b_signal_period: int
+    a_fast_window: int = 12
+    a_slow_window: int = 26
+    a_signal_period: int = 9
+    b_fast_window: int = 12
+    b_slow_window: int = 26
+    b_signal_period: int = 9
 
-    macd_lvl: str
+    macd_lvl: str = ""
+
 
 class ABMACDStrategy:
     config: ABMACDStrategyConfig
@@ -40,7 +42,7 @@ class ABMACDStrategy:
 
     def __init__(self, config: ABMACDStrategyConfig, action_handler: Callable):
         self.config = config
-        
+
         self.sm = NewABMacdStrategyModel(config.mswap_enable)
 
         self.am_a = ArrayManager()
@@ -101,7 +103,7 @@ class ABMACDStrategy:
         ma_filter = self.am_b.sma(self.config.b_ma_window, True)
 
         self.sm.update_ma_signal(ma_filter[-1])
-    
+
     def on_a_level_bar(self, bar: BarData):
         self.am_a.update_bar(bar)
         if not self.am_a.inited:
