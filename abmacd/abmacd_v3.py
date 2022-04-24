@@ -1,4 +1,5 @@
 
+from dataclasses import dataclass
 from typing import Callable
 from abmacd.strategy_model.builder import NewABMacdStrategyModel
 from abmacd.strategy_model.signal_model.macd_sm import ABMacdAction
@@ -13,6 +14,7 @@ from vnpy_ctastrategy import (
 from abmacd.ft_bargenerator import BarGenerator
 from vnpy.trader.constant import Interval
 
+@dataclass
 class ABMACDStrategyConfig:
     mswap_enable: bool
     # b_ma_window
