@@ -81,9 +81,6 @@ class ABMACDStrategy:
         self.bg_a.update_bar(bar)
 
         action = self.sm.handler(bar.close_price, bar.datetime.month, bar.datetime.day)
-        
-        if action is None:
-            print(bar)
 
         self.action_handler(bar.close_price, action)
 

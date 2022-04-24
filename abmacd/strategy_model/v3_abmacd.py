@@ -49,7 +49,6 @@ class ABMacdStrategyModelV3:
 
     def _close_handler(self, action: ABMacdAction) -> ABMacdAction:
         valid_action = [
-            ABMacdAction.EMPTY, 
             ABMacdAction.B_CLOSE_LONG, 
             ABMacdAction.B_CLOSE_SHORT, 
             ABMacdAction.A_RB_LONG, 
@@ -57,10 +56,16 @@ class ABMacdStrategyModelV3:
             ABMacdAction.A_CLOSE_SHORT
         ]
         
-        if action not in valid_action:
-            return ABMacdAction.EMPTY
+        if action in valid_action:
+            if action is ABMacdAction.A_RB_LONG:
+                return ABMacdAction.MS_CLOSE_SHORT
+            
+            if action is ABMacdAction.A_RB_SHORT:
+                return ABMacdAction.MS_CLOSE_LONG
+
+            return action
         
-        return action
+        return ABMacdAction.EMPTY
     
     def _ma_filter_handler(self, action: ABMacdAction) -> ABMacdAction:
         if action is ABMacdAction.B_OPEN_LONG_A:

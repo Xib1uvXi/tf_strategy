@@ -83,6 +83,8 @@ class ABMacdAction(Enum):
 
     EMPTY = "EMPTY"
 
+    MS_CLOSE_SHORT = "MS平空"
+    MS_CLOSE_LONG = "MS平多"
     MUSTCLOSE = "S强制平仓"
 
 

@@ -69,7 +69,7 @@ class ABMacdStrategyModel:
             self.trader._close_short(price, action)
 
         elif action is ABMacdAction.A_RB_SHORT:
-            self.trader._rollback_long_to_short(price, action)
+            self.trader._close_long(price, action)
         
         elif action is ABMacdAction.A_CLOSE_SHORT:
             self.trader._close_long(price, action, is_blvl=False)
