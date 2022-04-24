@@ -9,6 +9,6 @@ def NewABMacdStrategyModel(mswap_enable: bool = False) -> ABMacdStrategyModelV3:
     abmacd_sm = ABMacdSignalModel()
     b_ma_filter = MaFilterSignalModel()
     # TODO fixme
-    mswap = MswapHelper(mswap_enable, swap_months=[4,7,12], must_close_days=[28,29,30,31], only_close_days=[25,26,27])
+    mswap = MswapHelper(mswap_enable)
 
     return ABMacdStrategyModelV3(abmacd_sm, b_ma_filter, mswap)

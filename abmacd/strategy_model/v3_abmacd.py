@@ -38,10 +38,10 @@ class ABMacdStrategyModelV3:
 
         
         if self.mswap.is_swap_month(bar_month):
-            if self.mswap.is_only_close_day(bar_day):
+            if self.mswap.is_only_close_day(bar_month, bar_day):
                 return self._close_handler(action)
             
-            if self.mswap.is_must_close_day(bar_day):
+            if self.mswap.is_must_close_day(bar_month, bar_day):
                 return ABMacdAction.MUSTCLOSE
         
         return self._ma_filter_handler(action)

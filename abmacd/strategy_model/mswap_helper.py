@@ -1,29 +1,39 @@
 
 class MswapHelper:
     enable: bool
-    swap_months: list
-    must_close_days: list
-    only_close_days: list
 
-    def __init__(self, enable: bool, swap_months:list, must_close_days: list, only_close_days: list):
-        self.must_close_days = must_close_days
-        self.only_close_days = only_close_days
-        self.swap_months = swap_months
+    def __init__(self, enable: bool):
+        
         self.enable = enable
     
     def is_swap_month(self, bar_month: int) -> bool:
         if not self.enable:
             return False
-        return bar_month in self.swap_months
+        return bar_month in [7, 12, 4]
     
-    def is_must_close_day(self, bar_day: int) -> bool:
+    def is_must_close_day(self, bar_month: int, bar_day: int) -> bool:
         if not self.enable:
             return False
-        return bar_day in self.must_close_days
+        
+        if bar_month in [7, 12]:
+            return bar_day in [29,30,31]
+        
+        if bar_month == 4:
+            return bar_day in [28,29,30]
+        
+        return False
 
-    def is_only_close_day(self, bar_day: int) -> bool:
+
+    def is_only_close_day(self, bar_month: int, bar_day: int) -> bool:
         if not self.enable:
             return False
-        return bar_day in self.only_close_days
+        
+        if bar_month in [7, 12]:
+            return bar_day in [26,27,28]
+        
+        if bar_month == 4:
+            return bar_day in [25,26,27]
+        
+        return False
 
 

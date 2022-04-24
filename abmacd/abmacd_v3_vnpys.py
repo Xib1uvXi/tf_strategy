@@ -115,6 +115,14 @@ class ABMACDStrategyByVN(CtaTemplate):
         elif action is ABMacdAction.A_CLOSE_SHORT:
             self._close_short(price)
 
+        elif action is ABMacdAction.MUSTCLOSE:
+            if self.pos != 0:
+                if self.pos > 0:
+                    self.sell(self.last_bar.close_price, abs(self.pos))
+                
+                if self.pos < 0:
+                    self.cover(self.last_bar.close_price, abs(self.pos))
+
         return
 
     def on_init(self):
@@ -149,7 +157,7 @@ class ABMACDStrategyByVN(CtaTemplate):
 
         self.last_bar = bar
 
-        # self.cancel_bg.update_bar(bar)
+        self.cancel_bg.update_bar(bar)
 
         self.sm.on_bar(bar)
 
