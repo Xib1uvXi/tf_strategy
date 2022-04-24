@@ -83,6 +83,8 @@ class ABMacdAction(Enum):
 
     EMPTY = "EMPTY"
 
+    MUSTCLOSE = "S强制平仓"
+
 
 class ABMacdSignalModel:
     asm: MacdSignalModel
@@ -165,7 +167,7 @@ class ABMacdSignalModel:
             if self.direction == -1:
                 return self._b_handle_short()
 
-        if self.a_sv_init and self.b_sv_init:
+        if (self.a_sv_init and self.b_sv_init) or (self.a_sv_init and not self.b_sv_init):
             # reset a_sv_init & b_sv_init
             self.a_sv_init = False
             self.b_sv_init = False

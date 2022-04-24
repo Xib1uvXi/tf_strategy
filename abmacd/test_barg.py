@@ -25,7 +25,7 @@ class DoubleMaStrategy(CtaTemplate):
         """"""
         super().__init__(cta_engine, strategy_name, vt_symbol, setting)
 
-        self.bg15 = BarGenerator(self.on_bar, 1, self.on_15min_bar, interval=Interval.DAILY)
+        self.bg15 = BarGenerator(self.on_bar, 15, self.on_15min_bar, interval=Interval.MINUTE)
         # self.bg15 = BarGenerator(self.on_bar, 1, self.on_15min_bar, interval=Interval.HOUR)
         self.am15 = ArrayManager()
 

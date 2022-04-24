@@ -196,7 +196,7 @@ class ABMACDStrategy(CtaTemplate):
 
     def on_b_level_bar(self, bar: BarData):
         # TODO fixme
-        self.cancel_all()
+        # self.cancel_all()
 
         self.am_b.update_bar(bar)
         if not self.am_b.inited:
