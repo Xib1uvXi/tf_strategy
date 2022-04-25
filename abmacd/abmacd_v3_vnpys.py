@@ -15,6 +15,7 @@ from abmacd.strategy_model.riskctl_model.stop_loss import Stoploss
 from abmacd.strategy_model.signal_model.macd_sm import ABMacdAction
 
 from abmacd.ft_bargenerator import BarGenerator
+from abmacd.strategy_model.trader_model.v2_tm import V2Trader
 
 
 class ABMACDStrategyByVN(CtaTemplate):
@@ -23,6 +24,8 @@ class ABMACDStrategyByVN(CtaTemplate):
 
     mswap_enable = False
     stoploss_enable = False
+
+    sm_debug = False
 
     b_ma_window = 10
 
@@ -52,7 +55,9 @@ class ABMACDStrategyByVN(CtaTemplate):
 
     parameters = ["a_fast_window", "a_slow_window",
                   "a_signal_period", "b_fast_window", "b_slow_window",
-                  "b_signal_period", "size", "macd_lvl", "b_ma_window", "mswap_enable", "stoploss_enable"]
+                  "b_signal_period", "size", "macd_lvl", "b_ma_window", 
+                  "mswap_enable", "stoploss_enable", "sm_debug"
+                ]
 
     variables = ["a_fast_macd0", "a_fast_macd1", "a_slow_macd0", "a_slow_macd1",
                  "b_fast_macd0", "b_fast_macd1", "b_slow_macd0", "b_slow_macd1", "size", "macd_lvl"]
@@ -75,6 +80,8 @@ class ABMACDStrategyByVN(CtaTemplate):
 
         self.short_stoploss = Stoploss(-1, 0.02)
 
+        self.trader = V2Trader(self.size, self.get_pricetick(), self.buy, self.short, self.sell, self.cover, self.sm_debug)
+
     def on_15min_bar(self, bar: BarData):
         """
         Callback of new 15 min bar data update.
@@ -86,47 +93,49 @@ class ABMACDStrategyByVN(CtaTemplate):
             return
 
         if action is ABMacdAction.A_OPEN_LONG:
-            self._open_long(price)
+            self.trader._open_long(price, action)
+
         elif action is ABMacdAction.A_OPEN_SHORT:
-            self._open_short(price)
+            self.trader._open_short(price, action)
+
         elif action is ABMacdAction.B_CLOSE_LONG:
-            self._close_long(price, is_blvl=True)
+            self.trader._close_long(price, action, is_blvl=True)
 
         elif action is ABMacdAction.B_CLOSE_SHORT:
-            self._close_short(price)
+            self.trader._close_short(price, action)
 
         elif action is ABMacdAction.B_OPEN_LONG_A:
-            self._open_long(price, is_back=True)
+            self.trader._open_long(price, action, is_back=True)
 
         elif action is ABMacdAction.B_OPEN_SHORT_A:
-            self._open_short(price, is_back=True)
+            self.trader._open_short(price, action, is_back=True)
 
         elif action is ABMacdAction.B_OPEN_LONG:
-            self._open_long(price, is_blvl=True)
+            self.trader._open_long(price, action, is_blvl=True)
 
         elif action is ABMacdAction.A_RB_LONG:
-            self._rollback_short_to_long(price)
+            self.trader._rollback_short_to_long(price, action)
 
         elif action is ABMacdAction.A_RB_SHORT:
-            self._rollback_long_to_short(price)
+            self.trader._rollback_long_to_short(price, action)
 
         elif action is ABMacdAction.A_CLOSE_SHORT:
-            self._close_short(price)
+            self.trader._close_short(price, action)
 
         elif action is ABMacdAction.MS_CLOSE_SHORT:
-            self._close_short(price)
+             self.trader._close_short(price, action)
 
         elif action is ABMacdAction.MS_CLOSE_LONG:
-            self._close_long(price)
+            self.trader._close_long(price, action)
 
         elif action is ABMacdAction.MUST_CLOSE:
             if self.pos != 0:
                 assert self.last_bar
                 if self.pos > 0:
-                    self.sell(self.last_bar.close_price, abs(self.pos))
+                    self.trader._close_long(price, action)
 
                 if self.pos < 0:
-                    self.cover(self.last_bar.close_price, abs(self.pos))
+                    self.trader._close_short(price, action)
 
         return
 
@@ -163,6 +172,8 @@ class ABMACDStrategyByVN(CtaTemplate):
         self.last_bar = bar
 
         self.cancel_bg.update_bar(bar)
+
+        self.trader.update_pos(self.pos)
 
         if self.stoploss_enable:
             if self.long_stoploss.need_close(bar.close_price):
@@ -210,78 +221,3 @@ class ABMACDStrategyByVN(CtaTemplate):
         Callback of stop order update.
         """
         pass
-
-    def _open_long(self, price: float, is_back: bool = False, is_blvl: bool = False):
-        if self.pos < 0:
-            return
-
-        if (not is_blvl) and abs(self.pos) != 0:
-            return
-
-        if is_back:
-            self.buy(price, self._target_pos())
-            self._reset_target_pos()
-        else:
-            self.buy(price, self.size)
-
-    def _open_short(self, price: float, is_back: bool = False):
-        if abs(self.pos) != 0:
-            return
-
-        if is_back:
-            self.short(price, self.size)
-        else:
-            self.short(price, self.size)
-
-    def _close_long(self, price: float, is_blvl: bool = False):
-        if abs(self.pos) == 0:
-            return
-
-        if self.pos > 0:
-            if is_blvl:
-                self._update_target_pos(self.pos)
-
-            self.sell(price, abs(self.pos))
-
-    def _close_short(self, price: float):
-        if abs(self.pos) == 0:
-            return
-
-        if self.pos < 0:
-            self.cover(price, abs(self.pos))
-
-    def _rollback_short_to_long(self, price: float):
-        if self.pos > 0:
-            return
-
-        if self.pos == 0:
-            self.buy(price, self.size)
-            return
-
-        if self.pos < 0:
-            self.cover(price, abs(self.pos))
-            self.buy(price, self.size)
-
-    def _rollback_long_to_short(self, price: float):
-        if self.pos < 0:
-            return
-
-        if self.pos == 0:
-            self.short(price, self.size)
-            return
-
-        if self.pos > 0:
-            self.sell(price, abs(self.pos))
-            self.short(price, self.size)
-
-    def _target_pos(self) -> float:
-        if self.target_pos == 0:
-            return self.size
-
-        return abs(self.target_pos)
-
-    def _reset_target_pos(self) -> None:
-        self.target_pos = 0
-
-    def _update_target_pos(self, pos: int) -> None:
-        self.target_pos = pos
