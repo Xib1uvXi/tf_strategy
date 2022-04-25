@@ -1,7 +1,7 @@
-import sys
-import os
-root_path = os.getcwd()
-sys.path.append(root_path)
+import sys  # nopep8
+import os  # nopep8
+root_path = os.getcwd()  # nopep8
+sys.path.append(root_path)  # nopep8
 from typing import Any
 from vnpy_ctastrategy.strategies.atr_rsi_strategy import AtrRsiStrategy
 from vnpy_ctastrategy.strategies.multi_timeframe_strategy import MultiTimeframeStrategy

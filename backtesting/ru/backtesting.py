@@ -1,7 +1,7 @@
-import sys
-import os
-root_path = os.getcwd()
-sys.path.append(root_path)
+import sys  # nopep8
+import os  # nopep8
+root_path = os.getcwd()  # nopep8
+sys.path.append(root_path)  # nopep8
 from util import gen_test_name
 from config import default_ru88_param_config
 from abmacd import vnpy_backtesting_current_strategy, vnpy_backtesting_current_strategy_setting
