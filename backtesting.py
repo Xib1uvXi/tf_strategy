@@ -90,7 +90,7 @@ def batch_3y_test():
 
     for pc in pcs:
         xbt = new_xbt_from_strategy_setting(pc, strategy_setting)
-        xbt._test_name = f"{pc['start'].strftime('%Y%m%d')}_{pc['end'].strftime('%Y%m%d')}_{pc['period']}"
+        xbt._test_name = f"{pc['start']}_{pc['end']}_{pc['period']}"
         batch.add_backtesting(xbt)
 
     batch.run_batch_backtesting(show_balance=True)

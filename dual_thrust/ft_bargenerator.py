@@ -153,12 +153,17 @@ class BarGenerator:
 
         # Check if window bar completed
         if not (bar.datetime.minute + 1) % self.window:
-            self.on_window_bar(self.window_bar)
-            self.window_bar = None
+            self._safe_swap()
 
         elif (bar.datetime.time() == time(10, 14) and bar.exchange in [Exchange.SHFE, Exchange.DCE, Exchange.CZCE]):
-            self.on_window_bar(self.window_bar)
-            self.window_bar = None
+            self._safe_swap()
+
+    def _safe_swap(self):
+        if self.window_bar:
+            _window_bar = self.window_bar
+            if self.on_window_bar:
+                self.on_window_bar(_window_bar)
+                self.window_bar = None
 
     def fe_update_bar_hour_window(self, bar: BarData) -> None:
         if not self.hour_bar:
@@ -341,7 +346,8 @@ class BarGenerator:
     def on_hour_bar(self, bar: BarData) -> None:
         """"""
         if self.window == 1:
-            self.on_window_bar(bar)
+            if self.on_window_bar:
+                self.on_window_bar(bar)
         else:
             if not self.window_bar:
                 self.window_bar = BarData(
@@ -371,8 +377,7 @@ class BarGenerator:
             self.interval_count += 1
             if not self.interval_count % self.window:
                 self.interval_count = 0
-                self.on_window_bar(self.window_bar)
-                self.window_bar = None
+                self._safe_swap()
 
     def update_bar_daily_window(self, bar: BarData) -> None:
         # If not inited, create window bar object

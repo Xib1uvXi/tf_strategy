@@ -1,7 +1,5 @@
 from typing import Any, Dict, List, Tuple
 from abmacd.abmacd_v2 import ABMACDStrategy
-from xbacktesting.x_optimizer import optimizer
-from vnpy.trader.optimize import OptimizationSetting
 
 
 default_ru88_param_config = {
@@ -46,9 +44,9 @@ def cg_target_filter(cg_bt_statistics: Dict[str, Any]):
     return False
 
 
-def gen_opt_tasks_33():
+# def gen_opt_tasks_33():
 
-    _b_ma_gen_opt_tasks_33()
+    # _b_ma_gen_opt_tasks_33()
     # opt = optimizer(default_bt_strategy, default_ru88_param_config, 3)
     # opt_setting = OptimizationSetting()
     # opt_setting.set_target('annual_return')
@@ -66,47 +64,47 @@ def gen_opt_tasks_33():
     # opt.run_opt()
 
 
-def _b_ma_gen_opt_tasks_33():
-    ts = [{'s': 3, 'e': 5}, {'s': 6, 'e': 8}, {'s': 9, 'e': 11}, {
-        's': 12, 'e': 14}, {'s': 15, 'e': 17}, {'s': 18, 'e': 20}]
+# def _b_ma_gen_opt_tasks_33():
+#     ts = [{'s': 3, 'e': 5}, {'s': 6, 'e': 8}, {'s': 9, 'e': 11}, {
+#         's': 12, 'e': 14}, {'s': 15, 'e': 17}, {'s': 18, 'e': 20}]
 
-    for t in ts:
-        opt = optimizer(default_bt_strategy, default_ru88_param_config, 3)
-        opt_setting = OptimizationSetting()
-        opt_setting.set_target('annual_return')
-        opt_setting.params['macd_lvl'] = ['1h15min']
+#     for t in ts:
+#         opt = optimizer(default_bt_strategy, default_ru88_param_config, 3)
+#         opt_setting = OptimizationSetting()
+#         opt_setting.set_target('annual_return')
+#         opt_setting.params['macd_lvl'] = ['1h15min']
 
-        opt_setting.params['a_fast_window'] = [22]
-        opt_setting.params['a_signal_period'] = [7]
-        opt_setting.params['a_slow_window'] = [33]
+#         opt_setting.params['a_fast_window'] = [22]
+#         opt_setting.params['a_signal_period'] = [7]
+#         opt_setting.params['a_slow_window'] = [33]
 
-        opt_setting.add_parameter('b_fast_window', 2, 15, 1)
-        opt_setting.add_parameter('b_slow_window', 12, 50, 1)
-        opt_setting.add_parameter('b_signal_period', 5, 20, 1)
-        opt_setting.add_parameter('b_ma_window', t['s'], t['e'], 1)
-        opt.set_optimization_setting(opt_setting, opt_target_filter)
-        opt.set_cg_setting(4, cg_target_filter)
-        opt.run_opt()
+#         opt_setting.add_parameter('b_fast_window', 2, 15, 1)
+#         opt_setting.add_parameter('b_slow_window', 12, 50, 1)
+#         opt_setting.add_parameter('b_signal_period', 5, 20, 1)
+#         opt_setting.add_parameter('b_ma_window', t['s'], t['e'], 1)
+#         opt.set_optimization_setting(opt_setting, opt_target_filter)
+#         opt.set_cg_setting(4, cg_target_filter)
+#         opt.run_opt()
 
 
-def gen_opt_tasks_34():
-    ts = [{'s': 3, 'e': 5}, {'s': 6, 'e': 8}, {'s': 9, 'e': 11}, {
-        's': 12, 'e': 14}, {'s': 15, 'e': 17}, {'s': 18, 'e': 20}]
+# def gen_opt_tasks_34():
+#     ts = [{'s': 3, 'e': 5}, {'s': 6, 'e': 8}, {'s': 9, 'e': 11}, {
+#         's': 12, 'e': 14}, {'s': 15, 'e': 17}, {'s': 18, 'e': 20}]
 
-    for t in ts:
-        opt = optimizer(default_bt_strategy, default_ru88_param_config, 3)
-        opt_setting = OptimizationSetting()
-        opt_setting.set_target('annual_return')
-        opt_setting.params['macd_lvl'] = ['1h15min']
+#     for t in ts:
+#         opt = optimizer(default_bt_strategy, default_ru88_param_config, 3)
+#         opt_setting = OptimizationSetting()
+#         opt_setting.set_target('annual_return')
+#         opt_setting.params['macd_lvl'] = ['1h15min']
 
-        opt_setting.params['a_fast_window'] = [22]
-        opt_setting.params['a_signal_period'] = [7]
-        opt_setting.params['a_slow_window'] = [34]
+#         opt_setting.params['a_fast_window'] = [22]
+#         opt_setting.params['a_signal_period'] = [7]
+#         opt_setting.params['a_slow_window'] = [34]
 
-        opt_setting.add_parameter('b_fast_window', 2, 15, 1)
-        opt_setting.add_parameter('b_slow_window', 12, 50, 1)
-        opt_setting.add_parameter('b_signal_period', 5, 20, 1)
-        opt_setting.add_parameter('b_ma_window', t['s'], t['e'], 1)
-        opt.set_optimization_setting(opt_setting, opt_target_filter)
-        opt.set_cg_setting(4, cg_target_filter)
-        opt.run_opt()
+#         opt_setting.add_parameter('b_fast_window', 2, 15, 1)
+#         opt_setting.add_parameter('b_slow_window', 12, 50, 1)
+#         opt_setting.add_parameter('b_signal_period', 5, 20, 1)
+#         opt_setting.add_parameter('b_ma_window', t['s'], t['e'], 1)
+#         opt.set_optimization_setting(opt_setting, opt_target_filter)
+#         opt.set_cg_setting(4, cg_target_filter)
+#         opt.run_opt()

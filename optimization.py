@@ -2,8 +2,6 @@ from ru_backtesting_util import cg_target_filter_by_annual_return, gen_opt_b_mac
 from vnpy.trader.optimize import OptimizationSetting
 from datetime import datetime
 
-from ru_opt_full_param_util import gen_opt_tasks_34
-
 
 def run_opt_b_ma_window_annual_retrun():
     lvls = ['1h15min', '1d1h', '1d4h']
@@ -178,10 +176,6 @@ def run_opt_b_ma_window_by_no_eq_a_macd_window_annual_retrun():
             task["b_signal_period"],
         )
         opt.run_opt()
-
-
-def ru_3y_full_opt():
-    gen_opt_tasks_34()
 
 
 if __name__ == '__main__':
