@@ -175,7 +175,7 @@ class BarGenerator:
         finished_bar = None
 
         # If minute is ending, update minute bar into window bar and push. 11：15、14：15、15：00
-        if bar.datetime.time() == time(11, 14) or bar.datetime.time == time(14, 14) or bar.datetime.time == time(14, 59):
+        if bar.datetime.time() == time(11, 14) or bar.datetime.time() == time(14, 14) or bar.datetime.time() == time(14, 59):
             self.hour_bar.high_price = max(
                 self.hour_bar.high_price,
                 bar.high_price
