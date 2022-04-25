@@ -85,7 +85,7 @@ class ABMacdAction(Enum):
 
     MS_CLOSE_SHORT = "MS平空"
     MS_CLOSE_LONG = "MS平多"
-    MUSTCLOSE = "S强制平仓"
+    MUST_CLOSE = "S强制平仓"
 
 
 class ABMacdSignalModel:

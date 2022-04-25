@@ -42,7 +42,7 @@ class ABMacdStrategyModelV3:
                 return self._close_handler(action)
             
             if self.mswap.is_must_close_day(bar_month, bar_day):
-                return ABMacdAction.MUSTCLOSE
+                return ABMacdAction.MUST_CLOSE
         
         return self._ma_filter_handler(action)
 

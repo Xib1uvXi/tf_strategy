@@ -119,7 +119,7 @@ class ABMACDStrategyByVN(CtaTemplate):
         elif action is ABMacdAction.MS_CLOSE_LONG:
             self._close_long(price)
 
-        elif action is ABMacdAction.MUSTCLOSE:
+        elif action is ABMacdAction.MUST_CLOSE:
             if self.pos != 0:
                 if self.pos > 0:
                     self.sell(self.last_bar.close_price, abs(self.pos))
