@@ -2,11 +2,11 @@ import sys
 import os
 root_path = os.getcwd()
 sys.path.append(root_path)
-from datetime import datetime
-from xbacktesting.xvnpy_backtesting import Xbacktesting
-from abmacd import vnpy_backtesting_current_strategy, vnpy_backtesting_current_strategy_setting
-from config import default_ru88_param_config
 from util import gen_test_name
+from config import default_ru88_param_config
+from abmacd import vnpy_backtesting_current_strategy, vnpy_backtesting_current_strategy_setting
+from xbacktesting.xvnpy_backtesting import Xbacktesting
+from datetime import datetime
 
 
 if __name__ == '__main__':

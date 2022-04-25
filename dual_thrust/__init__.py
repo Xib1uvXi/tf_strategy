@@ -1,1 +1,0 @@
-name = "dual_thrust"

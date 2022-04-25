@@ -6,3 +6,5 @@ per-file-ignores =
     xbacktesting/x_optimizer.py:E501
     abmacd/abmacd_v2.py:E501
     abmacd/strategy_model/riskctl_model/stop_loss.py:E501
+    backtesting/ru/compare.py:E402
+    backtesting/ru/backtesting.py:E402
