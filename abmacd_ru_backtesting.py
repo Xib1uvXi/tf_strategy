@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from abmacd.abmacd_v3_vnpys import ABMACDStrategyByVN
-from dual_thrust.dual_thrust_vnpys import DualThrustStrategy
+from dual_thrust.dual_thrust_vnpys import DualThrustStrategyByVN
 from ru_backtesting_util import default_ru88_param_config, default_bt_strategy
 from xbacktesting.xvnpy_backtesting import Xbacktesting
 from vnpy_ctastrategy.strategies.dual_thrust_strategy import DualThrustStrategy as VNDT 
@@ -39,7 +39,7 @@ def nongsiabao():
 def dt_no_limit_exec():
     strategy_setting = {'n':5}
     period_config = {"start": datetime(2020, 1, 1), "end": datetime(2020, 12, 31), "period": "1"}
-    xbt = Xbacktesting(strategy_class=DualThrustStrategy, param_config=default_ru88_param_config,period_config=period_config,strategy_setting=strategy_setting, test_name=gen_test_name(period_config, "nongsiabao"))
+    xbt = Xbacktesting(strategy_class=DualThrustStrategyByVN, param_config=default_ru88_param_config,period_config=period_config,strategy_setting=strategy_setting, test_name=gen_test_name(period_config, "nongsiabao"))
     xbt.run_backtesting(output=True)
 
 def dt_by_vnpy():

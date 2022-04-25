@@ -10,13 +10,14 @@ from vnpy_ctastrategy import (
 )
 
 from vnpy.trader.constant import Interval
+from dual_thrust.dual_thrust_v1 import DualThrustStrategyConfig, DualThrustStrategy
 
 from dual_thrust.ft_bargenerator import BarGenerator
 from dual_thrust.strategy_model.signal_model.dual_thrust_sm import DualThrustSignalModel
 from dual_thrust.strategy_model.v1_dual_thrust import DualThrustAction, DualThrustStrategyModel
 
 
-class DualThrustStrategy(CtaTemplate):
+class DualThrustStrategyByVN(CtaTemplate):
     """"""
     author = "Xib"
 
@@ -37,13 +38,19 @@ class DualThrustStrategy(CtaTemplate):
         """"""
         super().__init__(cta_engine, strategy_name, vt_symbol, setting)
 
+        config = DualThrustStrategyConfig(n=self.n, k1=self.k1, k2=self.k2)
+
+        self.sm = DualThrustStrategy(config, self.action_handler)
+
         self.bg = BarGenerator(self.on_bar)
 
-        self.bg_1day = BarGenerator(
-                self.on_bar, 1, self.on_bar_1day, interval=Interval.DAILY)
-        self.am = ArrayManager(self.n)
-
-        self.sm = DualThrustStrategyModel(DualThrustSignalModel(self.k1, self.k2))
+        self.cancel_bg = BarGenerator(self.on_bar, 5, self.on_15min_bar)
+    
+    def on_15min_bar(self, bar: BarData):
+        """
+        Callback of new 15 min bar data update.
+        """
+        self.cancel_all()
 
     def on_init(self):
         """
@@ -70,39 +77,12 @@ class DualThrustStrategy(CtaTemplate):
         """
         self.bg.update_tick(tick)
 
-    def on_bar_1day(self, bar: BarData):
-        self.am.update_bar(bar)
-
-        self.am.update_bar(bar)
-        if not self.am.inited:
-            return
-
-        self.sm.update_signal_value(self.am.high_array.max(), self.am.low_array.min(),self.am.close_array.max(), self.am.close_array.min())
-
     def on_bar(self, bar: BarData):
         """
         Callback of new bar data update.
         """
-        self.cancel_all()
-
-        self.bg_1day.update_bar(bar)
-
-        if self.last_bar is None:
-            self.last_bar = bar
-
-        open_price: float = 0
-        if self.bg_1day.hour_bar is None:
-            open_price = bar.open_price
-        else:
-            open_price = self.bg_1day.hour_bar.open_price
-
-        self.sm.update_open_price(open_price)
-       
-        self.last_bar = bar
-
-        action = self.sm.handler(bar.datetime.time(), bar.close_price)
-
-        self.action_handler(action, bar.close_price)
+        
+        self.sm.on_bar(bar)
 
     def action_handler(self,action: DualThrustAction, price: float):
         if action is DualThrustAction.EMPTY:
