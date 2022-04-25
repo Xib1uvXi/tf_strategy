@@ -78,6 +78,20 @@ def get_vnpy_atr_rsi_xbt(period_config: dict) -> Xbacktesting:
             'vnpy_atr_rsi'))
 
 
+def nongsiabao():
+    strategy_setting = {'size': 10, 'macd_lvl': '1h15min', 'mswap_enable': True, 'stoploss_enable': True}
+    period_config = {"start": datetime(2020, 1, 1), "end": datetime(2020, 12, 31), "period": "1"}
+    xbt = Xbacktesting(
+        strategy_class=vnpy_backtesting_current_strategy,
+        param_config=default_ru88_param_config,
+        period_config=period_config,
+        strategy_setting=strategy_setting,
+        test_name=gen_test_name(
+            period_config,
+            "nongsiabao"))
+    xbt.run_backtesting(output=True)
+
+
 def compare():
     period_config = {"start": datetime(2020, 1, 1), "end": datetime(2020, 12, 31), "period": "1"}
 
@@ -103,4 +117,5 @@ def compare():
     xbatch.run_batch_backtesting()
 
 if __name__ == '__main__':
+    nongsiabao()
     compare()
