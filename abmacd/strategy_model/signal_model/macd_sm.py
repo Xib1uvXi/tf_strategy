@@ -153,7 +153,7 @@ class ABMacdSignalModel:
         self.direction = -1
 
     def exec(self) -> ABMacdAction:
-        if self.a_sv_init == False and self.b_sv_init == False:
+        if self.a_sv_init is False and self.b_sv_init is False:
             return ABMacdAction.EMPTY
 
         if self.b_sv_init and not self.a_sv_init:
@@ -257,5 +257,3 @@ class ABMacdSignalModel:
             return ABMacdAction.B_CLOSE_SHORT
 
         return ABMacdAction.EMPTY
-    
-    

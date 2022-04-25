@@ -1,9 +1,9 @@
 from datetime import time
-from vnpy_ctastrategy import (
-    BarData,
-    TickData,
-)
 from typing import Callable, Optional
+from vnpy.trader.object import (
+    TickData,
+    BarData,
+)
 from vnpy.trader.constant import Interval
 from vnpy.trader.constant import Exchange
 
@@ -21,14 +21,14 @@ class BarGenerator:
 
     def __init__(
         self,
-        on_bar: Callable,
+        on_bar: Callable[[BarData], None],
         window: int = 0,
-        on_window_bar: Callable = None,
+        on_window_bar: Optional[Callable[[BarData], None]] = None,
         interval: Interval = Interval.MINUTE
     ):
         """Constructor"""
         self.bar: BarData = None
-        self.on_bar: Callable = on_bar
+        self.on_bar: Callable[[BarData], None] = on_bar
 
         self.interval: Interval = interval
         self.interval_count: int = 0
@@ -37,7 +37,7 @@ class BarGenerator:
 
         self.window: int = window
         self.window_bar: BarData = None
-        self.on_window_bar: Callable = on_window_bar
+        self.on_window_bar: Optional[Callable[[BarData], None]] = on_window_bar
 
         self.last_tick: TickData = None
 

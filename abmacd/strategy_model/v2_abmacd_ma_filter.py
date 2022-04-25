@@ -2,9 +2,21 @@
 from abmacd.strategy_model.riskctl_model.stop_loss import Stoploss
 from abmacd.strategy_model.signal_model.macd_sm import ABMacdAction, ABMacdSignalModel
 from abmacd.strategy_model.signal_model.ma_filter_sm import MaFilterSignalModel
-from typing import Callable
+from typing import Protocol
 
 from abmacd.strategy_model.trader_model.v2_tm import V2Trader
+
+
+class ProxyCallable(Protocol):
+    def __call__(
+        self,
+        price: float,
+        volume: float,
+        stop: bool = False,
+        lock: bool = False,
+        net: bool = False,
+    ): ...
+
 
 class ABMacdStrategyModel:
     abmacd_sm: ABMacdSignalModel
@@ -16,7 +28,17 @@ class ABMacdStrategyModel:
 
     last_action: ABMacdAction
 
-    def __init__(self, buy: Callable, short: Callable, sell: Callable, cover: Callable, fixed_size: float, pricetick: float, stoploss_enable: bool = False, debug: bool = False):
+    def __init__(
+            self,
+            buy: ProxyCallable,
+            short: ProxyCallable,
+            sell: ProxyCallable,
+            cover: ProxyCallable,
+            fixed_size: float,
+            pricetick: float,
+            stoploss_enable: bool = False,
+            debug: bool = False,
+    ):
         self.trader = V2Trader(fixed_size, pricetick, buy, short, sell, cover, debug)
         self.abmacd_sm = ABMacdSignalModel()
         self.b_ma_filter = MaFilterSignalModel()
@@ -26,17 +48,17 @@ class ABMacdStrategyModel:
 
     def update_pos(self, pos: int):
         self.trader.update_pos(pos)
-    
+
     def update_macd_signal(self, fast_macd0: float, slow_macd0: float, big_level=False):
         if big_level:
             self.abmacd_sm.update_a_signal_value(fast_macd0, slow_macd0)
             return
-        
+
         self.abmacd_sm.update_b_signal_value(fast_macd0, slow_macd0)
 
     def update_ma_signal(self, ma: float):
         self.b_ma_filter.update_ma(ma)
-    
+
     def _handle_stoploss(self, price: float):
         if self.long_stoploss.need_close(price):
             self.trader._sell(price, "做多止损")
@@ -54,14 +76,14 @@ class ABMacdStrategyModel:
         if action is ABMacdAction.EMPTY:
             self.last_action = action
             return
-        
+
         # other filter??
         if action is ABMacdAction.B_CLOSE_LONG:
             self.trader._close_long(price, action, is_blvl=True)
 
         elif action is ABMacdAction.B_CLOSE_SHORT:
             self.trader._close_short(price, action)
-        
+
         # elif action is ABMacdAction.B_CLOSE_SHORT_V2:
         #     self.trader._close_short(price, action)
 
@@ -70,13 +92,12 @@ class ABMacdStrategyModel:
 
         elif action is ABMacdAction.A_RB_SHORT:
             self.trader._close_long(price, action)
-        
+
         elif action is ABMacdAction.A_CLOSE_SHORT:
             self.trader._close_long(price, action, is_blvl=False)
-        
+
         self.last_action = action
         return
-
 
     def handler(self, price: float):
         if self.stoploss_enabled:
@@ -89,7 +110,7 @@ class ABMacdStrategyModel:
         if action is ABMacdAction.EMPTY:
             self.last_action = action
             return
-        
+
         # other filter??
         if action is ABMacdAction.A_OPEN_LONG:
             self.trader._open_long(price, action)
@@ -102,7 +123,7 @@ class ABMacdStrategyModel:
 
         elif action is ABMacdAction.B_CLOSE_SHORT:
             self.trader._close_short(price, action)
-        
+
         # elif action is ABMacdAction.B_CLOSE_SHORT_V2:
         #     self.trader._close_short(price, action)
 
@@ -123,11 +144,9 @@ class ABMacdStrategyModel:
 
         elif action is ABMacdAction.A_RB_SHORT:
             self.trader._rollback_long_to_short(price, action)
-        
+
         elif action is ABMacdAction.A_CLOSE_SHORT:
             self.trader._close_short(price, action)
-        
+
         self.last_action = action
         return
-
-

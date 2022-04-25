@@ -1,4 +1,16 @@
-from typing import Any, Callable
+from typing import Any, Protocol
+
+
+class ProxyCallable(Protocol):
+    def __call__(
+        self,
+        price: float,
+        volume: float,
+        stop: bool = False,
+        lock: bool = False,
+        net: bool = False,
+    ): ...
+
 
 class BaseTraderModel:
     debug: bool = False
@@ -10,22 +22,30 @@ class BaseTraderModel:
     pos: int
 
     # open
-    buy_proxy: Callable
-    short_proxy: Callable
+    buy_proxy: ProxyCallable
+    short_proxy: ProxyCallable
 
     # close
-    sell_proxy: Callable
-    cover_proxy: Callable
+    sell_proxy: ProxyCallable
+    cover_proxy: ProxyCallable
 
-    def __init__(self, buy: Callable, short: Callable, sell: Callable, cover: Callable, fixed_size: float, debug: bool = False):
+    def __init__(
+            self,
+            buy: ProxyCallable,
+            short: ProxyCallable,
+            sell: ProxyCallable,
+            cover: ProxyCallable,
+            fixed_size: float,
+            debug: bool = False,
+    ):
         self.fixed_size = fixed_size
-        self.pos = None
+        self.pos = 0
         self.buy_proxy = buy
         self.short_proxy = short
         self.sell_proxy = sell
         self.cover_proxy = cover
         self.debug = debug
- 
+
     def update_pos(self, pos: int):
         self.pos = pos
 

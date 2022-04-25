@@ -1,14 +1,14 @@
-from calendar import month
 from vnpy_ctastrategy import (
     CtaTemplate,
     StopOrder,
+)
+from vnpy.trader.object import (
     TickData,
     BarData,
     TradeData,
     OrderData,
 )
-
-from vnpy.trader.constant import Interval, Direction, Offset, Status
+from vnpy.trader.constant import Direction, Offset, Status
 
 from abmacd.abmacd_v3 import ABMACDStrategy, ABMACDStrategyConfig
 from abmacd.strategy_model.riskctl_model.stop_loss import Stoploss
@@ -52,7 +52,7 @@ class ABMACDStrategyByVN(CtaTemplate):
 
     parameters = ["a_fast_window", "a_slow_window",
                   "a_signal_period", "b_fast_window", "b_slow_window",
-                  "b_signal_period", "size", "macd_lvl",  "b_ma_window", "mswap_enable", "stoploss_enable"]
+                  "b_signal_period", "size", "macd_lvl", "b_ma_window", "mswap_enable", "stoploss_enable"]
 
     variables = ["a_fast_macd0", "a_fast_macd1", "a_slow_macd0", "a_slow_macd1",
                  "b_fast_macd0", "b_fast_macd1", "b_slow_macd0", "b_slow_macd1", "size", "macd_lvl"]
@@ -121,6 +121,7 @@ class ABMACDStrategyByVN(CtaTemplate):
 
         elif action is ABMacdAction.MUST_CLOSE:
             if self.pos != 0:
+                assert self.last_bar
                 if self.pos > 0:
                     self.sell(self.last_bar.close_price, abs(self.pos))
 
@@ -177,6 +178,7 @@ class ABMACDStrategyByVN(CtaTemplate):
         """
         if order.status == Status.CANCELLED:
             if order.offset == Offset.CLOSE:
+                assert self.last_bar
                 if order.direction == Direction.LONG:
                     self.cover(self.last_bar.close_price, order.volume)
 

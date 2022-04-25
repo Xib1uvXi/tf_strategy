@@ -1,13 +1,14 @@
 from vnpy_ctastrategy import (
     CtaTemplate,
     StopOrder,
+)
+from vnpy.trader.object import (
     TickData,
     BarData,
     TradeData,
     OrderData,
-    ArrayManager,
 )
-
+from vnpy.trader.utility import ArrayManager
 from vnpy.trader.constant import Interval
 from abmacd.strategy_model.single_macd_strategy_model import SingleMacdStrategyModel
 from abmacd.ft_bargenerator import BarGenerator
@@ -29,7 +30,7 @@ class SingleMACDStrategy(CtaTemplate):
     macd_lvl = ""
     size = 0.0
     sm_debug = False
-    
+
     last_tick = None
     last_bar = None
 
@@ -40,7 +41,7 @@ class SingleMACDStrategy(CtaTemplate):
     def __init__(self, cta_engine, strategy_name, vt_symbol, setting):
         """"""
         super().__init__(cta_engine, strategy_name, vt_symbol, setting)
-    
+
         self.write_log(strategy_name)
         self.write_log(setting)
 
@@ -92,7 +93,6 @@ class SingleMACDStrategy(CtaTemplate):
 
         self.bg_a.update_tick(tick)
 
-
     def on_bar(self, bar: BarData):
         """
         Callback of new bar data update.
@@ -101,7 +101,7 @@ class SingleMACDStrategy(CtaTemplate):
         self.last_bar = bar
 
         self.bg_a.update_bar(bar)
-    
+
     def on_order(self, order: OrderData):
         """
         Callback of new order data update.

@@ -1,20 +1,20 @@
-from typing import Callable
+from typing import Any, Callable, Dict, List, Optional, Tuple
 from vnpy_ctastrategy.backtesting import BacktestingEngine
 from vnpy.trader.optimize import OptimizationSetting
 
 from xbacktesting.xvnpy_backtesting import Xbacktesting
 
+
 class optimizer:
     opt_engine: BacktestingEngine
-    param_config: dict
+    param_config: Dict[str, Any]
     strategy_class: type
-    period_config: dict
-    opt_target_filter: Callable = None
-    cg_target_filter: Callable = None
-    cg_period_config: dict
-    
+    period_config: Dict[str, Any]
+    opt_target_filter: Optional[Callable[[List[Tuple[Any, ...]]], List[Tuple[Any, ...]]]] = None
+    cg_target_filter: Optional[Callable[[Dict[str, Any]], bool]] = None
+    cg_period_config: Dict[str, Any]
 
-    def __init__(self, strategy_class: type, param_config: dict, period_config: dict):
+    def __init__(self, strategy_class: type, param_config: Dict[str, Any], period_config: Dict[str, Any]):
         self.opt_engine = BacktestingEngine()
         self.strategy_class = strategy_class
         self.param_config = param_config
@@ -22,9 +22,8 @@ class optimizer:
         self._init_param()
         self.opt_engine.add_strategy(self.strategy_class, {})
 
-        self._raw_opt_results = []
-        self._filter_opt_results = []
-        self.opt_results = []
+        self._raw_opt_results: Optional[List[Tuple[Any, ...]]] = []
+        self.opt_results: List[Dict[str, Any]] = []
         self.optimization_setting: OptimizationSetting = None
 
     def _init_param(self):
@@ -41,11 +40,12 @@ class optimizer:
             capital=self.param_config["capital"]
         )
 
-    def set_optimization_setting(self, optimization_setting: OptimizationSetting, opt_target_filter: Callable):
+    def set_optimization_setting(self, optimization_setting: OptimizationSetting,
+                                 opt_target_filter: Callable[[List[Tuple[Any, ...]]], List[Tuple[Any, ...]]]):
         self.optimization_setting = optimization_setting
         self.opt_target_filter = opt_target_filter
-    
-    def set_cg_setting(self, cg_period_config: dict, cg_target_filter: Callable):
+
+    def set_cg_setting(self, cg_period_config: Dict[str, Any], cg_target_filter: Callable[[Dict[str, Any]], bool]):
         self.cg_period_config = cg_period_config
         self.cg_target_filter = cg_target_filter
 
@@ -57,7 +57,7 @@ class optimizer:
         if self.opt_target_filter is None:
             print("请先设置优化目标过滤器")
             exit()
-        
+
         if self.cg_target_filter is None:
             print("请先设置cg目标过滤器")
             exit()
@@ -66,11 +66,11 @@ class optimizer:
             print("请先设置cg回测周期")
             exit()
 
-        self._run_optimization()
+        results = self._run_optimization()
 
-        for fr in self._filter_opt_results:
+        for fr in results:
             self._cg_bt(fr)
-        
+
         print("优化完成")
 
         self._show_opt_result()
@@ -84,7 +84,6 @@ class optimizer:
         for result in self.opt_results:
             self._sc_out_v1(result)
 
-    
     def _sc_out_v1(self, result):
         opt_msg = f"周期:{self.period_config['period']}\t 参数:{result['strategy_setting']}\t 年化收益:{result['opt_result']['annual_return']:,.2f}%\t 最大百分比回撤:{result['opt_result']['max_ddpercent']:,.2f}%\t 夏普率:{result['opt_result']['sharpe_ratio']:,.2f}\t 交易笔数:{result['opt_result']['total_trade_count']}"
         print(opt_msg)
@@ -92,17 +91,17 @@ class optimizer:
         print(cg_msg)
         # print('              ')
 
-    def _run_optimization(self, output: bool = False):
+    def _run_optimization(self, output: bool = False) -> List[Tuple[Any, ...]]:
         results = self.opt_engine.run_bf_optimization(
             self.optimization_setting, output)
         self._raw_opt_results = results
 
-        filter_results = self.opt_target_filter(results)
+        filter_results: Optional[List[Tuple[Any, ...]]] = self.opt_target_filter(results) if self.opt_target_filter else results
         if filter_results is None:
             print("优化目标过滤器返回空值")
             exit()
 
-        self._filter_opt_results = filter_results
+        return filter_results
 
     def _cg_bt(self, filter_result):
         strategy_setting = self._gen_cg_strategy_setting(filter_result[0])
@@ -112,18 +111,19 @@ class optimizer:
         cg_xbt.run_backtesting()
 
         if self._check_cg_bt_statistics(cg_xbt._statistics):
-            result = {"strategy_setting": filter_result[0], "opt_result": filter_result[2], "cg_result": cg_xbt._statistics}
+            result = {
+                "strategy_setting": filter_result[0],
+                "opt_result": filter_result[2],
+                "cg_result": cg_xbt._statistics,
+            }
             self.opt_results.append(result)
 
-
-
-
-    def _check_cg_bt_statistics(self, cg_bt_statistics: dict):
+    def _check_cg_bt_statistics(self, cg_bt_statistics: Dict[str, Any]):
         if cg_bt_statistics is None:
             print("cg bt 回测结果为空")
             return False
 
-        if self.cg_target_filter(cg_bt_statistics):
+        if self.cg_target_filter and self.cg_target_filter(cg_bt_statistics):
             return True
 
         return False
@@ -131,8 +131,3 @@ class optimizer:
     def _gen_cg_strategy_setting(self, raw_setting: str):
         setting = eval(raw_setting)
         return setting
-
-    def show_filter_opt_result(self):
-        for result in self._filter_opt_results:
-            msg: str = f"参数：{result[0]}, 目标：{result[1]}"
-            print(msg)

@@ -1,25 +1,26 @@
+from typing import List
 from vnpy_ctastrategy import (
     CtaTemplate,
     StopOrder,
+)
+from vnpy.trader.object import (
     TickData,
     BarData,
     TradeData,
     OrderData,
-    ArrayManager,
 )
-
+from vnpy.trader.utility import ArrayManager
+from vnpy.trader.constant import Interval
 from vnpy_ctastrategy.backtesting import BacktestingEngine
 from datetime import datetime
-
 from ft_bargenerator import BarGenerator
-from vnpy.trader.constant import Interval
+
 
 class DoubleMaStrategy(CtaTemplate):
     author = "用Python的交易员"
 
-
-    parameters = []
-    variables = []
+    parameters: List[str] = []
+    variables: List[str] = []
 
     def __init__(self, cta_engine, strategy_name, vt_symbol, setting):
         """"""
@@ -67,7 +68,6 @@ class DoubleMaStrategy(CtaTemplate):
 
         self.put_event()
 
-
     def on_15min_bar(self, bar: BarData):
         """"""
         self.am15.update_bar(bar)
@@ -93,6 +93,7 @@ class DoubleMaStrategy(CtaTemplate):
         Callback of stop order update.
         """
         pass
+
 
 engine = BacktestingEngine()
 engine.set_parameters(

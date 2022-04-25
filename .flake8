@@ -1,0 +1,10 @@
+[flake8]
+max-line-length = 150
+per-file-ignores =
+    play.py:*
+    backtesting.py:E501
+    optimization.py:E501
+    data_downloader.py:E501
+    xbacktesting/x_optimizer.py:E501
+    abmacd/abmacd_v2.py:E501
+    abmacd/strategy_model/riskctl_model/stop_loss.py:E501

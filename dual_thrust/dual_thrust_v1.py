@@ -1,17 +1,27 @@
 from dataclasses import dataclass
-from typing import Callable
-
-from dual_thrust.ft_bargenerator import BarGenerator
+from typing import Protocol
 from vnpy.trader.constant import Interval
-
-from vnpy_ctastrategy import (
-    ArrayManager,
+from vnpy.trader.utility import ArrayManager
+from vnpy.trader.object import (
     BarData,
     TickData
 )
-from dual_thrust.strategy_model.signal_model.dual_thrust_sm import DualThrustSignalModel
 
-from dual_thrust.strategy_model.v1_dual_thrust import DualThrustStrategyModel
+from .ft_bargenerator import BarGenerator
+from .strategy_model.signal_model.dual_thrust_sm import DualThrustSignalModel
+from .strategy_model.v1_dual_thrust import DualThrustStrategyModel
+
+
+class ActionHandler(Protocol):
+    def __call__(
+        self,
+        price: float,
+        volume: float,
+        stop: bool = False,
+        lock: bool = False,
+        net: bool = False,
+    ): ...
+
 
 @dataclass
 class DualThrustStrategyConfig:
@@ -22,10 +32,10 @@ class DualThrustStrategyConfig:
 
 class DualThrustStrategy:
     config: DualThrustStrategyConfig
-    action_handler: Callable
+    action_handler: ActionHandler
     last_bar = None
 
-    def __init__(self, config: DualThrustStrategyConfig, action_handler: Callable):
+    def __init__(self, config: DualThrustStrategyConfig, action_handler: ActionHandler):
         self.action_handler = action_handler
         self.config = config
         self.sm = DualThrustStrategyModel(DualThrustSignalModel(self.config.k1, self.config.k2))
@@ -34,10 +44,10 @@ class DualThrustStrategy:
     def init_bar_generator(self):
         self.bg = BarGenerator(self.on_bar)
         self.bg_1day = BarGenerator(
-                self.on_bar, 1, self.on_bar_1day, interval=Interval.DAILY)
-        
+            self.on_bar, 1, self.on_bar_1day, interval=Interval.DAILY)
+
         self.am = ArrayManager(self.config.n)
-    
+
     def on_tick(self, tick: TickData):
         """
         Callback of new tick data update.
@@ -58,14 +68,13 @@ class DualThrustStrategy:
             open_price = self.bg_1day.hour_bar.open_price
 
         self.sm.update_open_price(open_price)
-       
+
         self.last_bar = bar
 
         action = self.sm.handler(bar.datetime.time(), bar.close_price)
 
         self.action_handler(action, bar.close_price)
 
-    
     def on_bar_1day(self, bar: BarData):
         self.am.update_bar(bar)
 
@@ -73,4 +82,9 @@ class DualThrustStrategy:
         if not self.am.inited:
             return
 
-        self.sm.update_signal_value(self.am.high_array.max(), self.am.low_array.min(),self.am.close_array.max(), self.am.close_array.min())
+        self.sm.update_signal_value(
+            self.am.high_array.max(),
+            self.am.low_array.min(),
+            self.am.close_array.max(),
+            self.am.close_array.min(),
+        )

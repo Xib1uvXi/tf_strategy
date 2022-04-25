@@ -1,4 +1,3 @@
-
 class DualThrustSignalModel:
     k1: float
     k2: float
@@ -15,13 +14,11 @@ class DualThrustSignalModel:
     long_entry: float
     short_entry: float
 
-
     def __init__(self, k1: float, k2: float):
         self.k1 = k1
         self.k2 = k2
 
         self.day_open = 0.0
-
 
     def update_signal_value(self, max_high: float, min_low: float, max_close: float, min_close: float):
         self.max_high = max_high

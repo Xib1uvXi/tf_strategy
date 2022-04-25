@@ -2,6 +2,7 @@ import unittest
 
 from macd_sm import ABMacdAction, ABMacdSignalModel
 
+
 class TestAB(unittest.TestCase):
     def test_open(self):
         abm = ABMacdSignalModel()
@@ -26,7 +27,7 @@ class TestAB(unittest.TestCase):
         abm.update_b_signal_value(46.55, 31.87)
         r = abm.exec()
         self.assertEqual(r, ABMacdAction.EMPTY)
-        
+
         abm.update_b_signal_value(46.60, 34.82)
         r = abm.exec()
         self.assertEqual(r, ABMacdAction.EMPTY)
@@ -66,11 +67,8 @@ class TestAB(unittest.TestCase):
         r = abm.exec()
         self.assertEqual(r, ABMacdAction.A_RB_SHORT)
 
-    
     def d1(self):
-        abm = ABMacdSignalModel()
-
-
+        ABMacdSignalModel()
 
 
 if __name__ == '__main__':

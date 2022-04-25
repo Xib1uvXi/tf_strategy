@@ -1,9 +1,8 @@
-
-
-from dual_thrust.strategy_model.signal_model.dual_thrust_sm import DualThrustSignalModel
+from .signal_model.dual_thrust_sm import DualThrustSignalModel
 from datetime import time
 
 from enum import Enum
+
 
 class DualThrustAction(Enum):
     EXITTIME_CLOSE = "日内平仓"
@@ -30,7 +29,7 @@ class DualThrustStrategyModel:
         self.dual_thrust_sm.update_signal_value(max_high, min_low, max_close, min_close)
         if not self.signal_value_init:
             self.signal_value_init = True
-    
+
     def update_open_price(self, open_price: float):
         self.dual_thrust_sm.update_open_price(open_price)
         if not self.open_price_init:
@@ -44,7 +43,7 @@ class DualThrustStrategyModel:
         if bar_time < self.exit_time:
             if bar_close_price > self.dual_thrust_sm.long_entry:
                 return DualThrustAction.TO_LONG
-            
+
             if bar_close_price < self.dual_thrust_sm.short_entry:
                 return DualThrustAction.TO_SHORT
 

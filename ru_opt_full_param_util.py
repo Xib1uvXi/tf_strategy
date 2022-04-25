@@ -1,3 +1,4 @@
+from typing import Any, Dict, List, Tuple
 from abmacd.abmacd_v2 import ABMACDStrategy
 from xbacktesting.x_optimizer import optimizer
 from vnpy.trader.optimize import OptimizationSetting
@@ -6,7 +7,7 @@ from vnpy.trader.optimize import OptimizationSetting
 default_ru88_param_config = {
     "vt_symbol": "RU88.SHFE",
     "interval": "1m",
-    "rate": 0.45/10000,
+    "rate": 0.45 / 10000,
     "slippage": 5,
     "size": 10,
     "pricetick": 5,
@@ -14,6 +15,7 @@ default_ru88_param_config = {
 }
 
 default_bt_strategy = ABMACDStrategy
+
 
 def macd_param_check_skip(raw_param: str) -> bool:
     param = eval(raw_param)
@@ -25,7 +27,7 @@ def macd_param_check_skip(raw_param: str) -> bool:
     return False
 
 
-def opt_target_filter(raw_opt_results: list):
+def opt_target_filter(raw_opt_results: List[Tuple[Any, ...]]):
     filter_result = []
     for opt_result in raw_opt_results:
         # if macd_param_check_skip(opt_result[0]):
@@ -33,14 +35,16 @@ def opt_target_filter(raw_opt_results: list):
 
         if opt_result[1] > 20:
             filter_result.append(opt_result)
-    
+
     return filter_result
 
-def cg_target_filter(cg_bt_statistics: dict):
+
+def cg_target_filter(cg_bt_statistics: Dict[str, Any]):
     if cg_bt_statistics['annual_return'] > 15:
         return True
-    
+
     return False
+
 
 def gen_opt_tasks_33():
 
@@ -61,8 +65,10 @@ def gen_opt_tasks_33():
     # opt.set_cg_setting(4, cg_target_filter)
     # opt.run_opt()
 
+
 def _b_ma_gen_opt_tasks_33():
-    ts = [{'s':3, 'e':5}, {'s':6, 'e':8}, {'s':9, 'e':11}, {'s':12, 'e':14}, {'s':15, 'e':17}, {'s':18, 'e':20}]
+    ts = [{'s': 3, 'e': 5}, {'s': 6, 'e': 8}, {'s': 9, 'e': 11}, {
+        's': 12, 'e': 14}, {'s': 15, 'e': 17}, {'s': 18, 'e': 20}]
 
     for t in ts:
         opt = optimizer(default_bt_strategy, default_ru88_param_config, 3)
@@ -82,8 +88,10 @@ def _b_ma_gen_opt_tasks_33():
         opt.set_cg_setting(4, cg_target_filter)
         opt.run_opt()
 
+
 def gen_opt_tasks_34():
-    ts = [{'s':3, 'e':5}, {'s':6, 'e':8}, {'s':9, 'e':11}, {'s':12, 'e':14}, {'s':15, 'e':17}, {'s':18, 'e':20}]
+    ts = [{'s': 3, 'e': 5}, {'s': 6, 'e': 8}, {'s': 9, 'e': 11}, {
+        's': 12, 'e': 14}, {'s': 15, 'e': 17}, {'s': 18, 'e': 20}]
 
     for t in ts:
         opt = optimizer(default_bt_strategy, default_ru88_param_config, 3)

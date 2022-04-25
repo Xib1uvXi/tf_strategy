@@ -19,6 +19,7 @@ three_year_period_config = {
     "4": {"start": datetime(2019, 2, 16), "end": datetime(2022, 2, 16)},
 }
 
+
 class bttimer:
     start_date: datetime
     end_date: datetime

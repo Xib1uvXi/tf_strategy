@@ -1,18 +1,16 @@
 
 from dataclasses import dataclass
 from typing import Callable
+from vnpy.trader.object import (
+    TickData,
+    BarData,
+)
+from vnpy.trader.utility import ArrayManager
+from vnpy.trader.constant import Interval
 from abmacd.strategy_model.builder import NewABMacdStrategyModel
 from abmacd.strategy_model.signal_model.macd_sm import ABMacdAction
 from abmacd.strategy_model.v3_abmacd import ABMacdStrategyModelV3
-
-from vnpy_ctastrategy import (
-    TickData,
-    BarData,
-    ArrayManager,
-)
-
 from abmacd.ft_bargenerator import BarGenerator
-from vnpy.trader.constant import Interval
 
 
 @dataclass
@@ -35,12 +33,10 @@ class ABMACDStrategy:
     config: ABMACDStrategyConfig
     sm: ABMacdStrategyModelV3
 
-    action_handler: Callable
-
     last_tick = None
     last_bar = None
 
-    def __init__(self, config: ABMACDStrategyConfig, action_handler: Callable):
+    def __init__(self, config: ABMACDStrategyConfig, action_handler: Callable[[float, ABMacdAction], None]):
         self.config = config
 
         self.sm = NewABMacdStrategyModel(config.mswap_enable)

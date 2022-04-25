@@ -1,3 +1,4 @@
+from typing import Any, Dict, List
 from pandas import DataFrame
 from vnpy_ctastrategy.backtesting import BacktestingEngine
 from vnpy.trader.optimize import OptimizationSetting
@@ -7,14 +8,21 @@ import plotly.graph_objects as go
 class Xbacktesting:
     engine: BacktestingEngine
     strategy_class: type
-    param_config: dict
-    period_config: dict
-    strategy_setting: dict
+    param_config: Dict[str, Any]
+    period_config: Dict[str, Any]
+    strategy_setting: Dict[str, Any]
     _df: DataFrame
-    _statistics: dict
+    _statistics: Dict[str, Any]
     _test_name: str
 
-    def __init__(self, strategy_class: type, param_config: dict, period_config: dict, strategy_setting: dict, test_name: str):
+    def __init__(
+            self,
+            strategy_class: type,
+            param_config: Dict[str, Any],
+            period_config: Dict[str, Any],
+            strategy_setting: Dict[str, Any],
+            test_name: str,
+    ):
         self.engine = BacktestingEngine()
         self.strategy_class = strategy_class
         self.param_config = param_config
@@ -37,7 +45,7 @@ class Xbacktesting:
             pricetick=self.param_config["pricetick"],
             capital=self.param_config["capital"]
         )
-    
+
     def run_bf_optimization(self, optimization_setting: OptimizationSetting, output: bool = False):
         self.engine.add_strategy(self.strategy_class, {})
         results = self.engine.run_bf_optimization(optimization_setting, output=False)
@@ -48,7 +56,7 @@ class Xbacktesting:
                 print(msg)
 
         return results
-    
+
     def run_backtesting(self, output: bool = False):
         self.engine.add_strategy(
             strategy_class=self.strategy_class,
@@ -64,7 +72,7 @@ class Xbacktesting:
         print("================================trade data===============================")
         for data in trade_data:
             print("order_id: ", data.orderid, "time: ", data.datetime.strftime('%Y-%m-%d %H-%M-%S'), "action: ",
-              data.offset.value, data.direction.value, "price: ", data.price, "amount: ", data.volume)
+                  data.offset.value, data.direction.value, "price: ", data.price, "amount: ", data.volume)
 
     def show_balance_chart(self):
         balance_line = go.Scatter(
@@ -93,13 +101,13 @@ class Xbacktesting:
 
 
 class Xbatchbacktesting:
-    engines = []
-    statistics_logs = []
-    dfs = []
+    engines: List[Xbacktesting] = []
+    statistics_logs: List[str] = []
+    dfs: List[Dict[str, Any]] = []
 
     def __init__(self):
         return
-    
+
     def add_backtesting(self, engine: Xbacktesting):
         self.engines.append(engine)
 
@@ -109,7 +117,7 @@ class Xbatchbacktesting:
             self.dfs.append({'df': engine._df, 'task': engine._test_name})
             log = f"周期：{engine.period_config['period']}年\t{engine._test_name}\t 年化收益：\t {engine._statistics['annual_return']:,.2f}%\t 百分比最大回撤：\t {engine._statistics['max_ddpercent']:,.2f}%\t 夏普比率：\t {engine._statistics['sharpe_ratio']:,.2f}"
             self.statistics_logs.append(log)
-        
+
         for log in self.statistics_logs:
             print(log)
 
@@ -118,7 +126,7 @@ class Xbatchbacktesting:
 
         if show_phl:
             self.phl_chart()
-    
+
     def balance_chart(self):
         balance_data = []
 
@@ -140,7 +148,7 @@ class Xbatchbacktesting:
 
     def phl_chart(self):
         data = []
-        
+
         for i in self.dfs:
             df = i['df']
             pnl_line = go.Scatter(
@@ -151,7 +159,7 @@ class Xbatchbacktesting:
             )
 
             data.append(pnl_line)
-        
+
         fig = go.Figure(data=data)
 
         fig.update_layout(title_text="收益曲线", xaxis_title="时间", yaxis_title="收益")

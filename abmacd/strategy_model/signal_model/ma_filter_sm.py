@@ -1,6 +1,3 @@
-
-from mimetypes import init
-
 class MaFilterSignalModel:
     init: int
     enable: bool = True
@@ -21,8 +18,7 @@ class MaFilterSignalModel:
 
         # swap
         self.ma0 = ma
-        
-    
+
     def filter_long(self) -> bool:
         if not self.enable:
             return True
@@ -38,6 +34,5 @@ class MaFilterSignalModel:
 
         if self.init <= 1:
             return False
-        
+
         return self.price0 < self.ma0
-    

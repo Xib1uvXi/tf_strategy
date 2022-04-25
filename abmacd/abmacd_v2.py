@@ -1,13 +1,14 @@
 from vnpy_ctastrategy import (
     CtaTemplate,
     StopOrder,
+)
+from vnpy.trader.object import (
     TickData,
     BarData,
     TradeData,
     OrderData,
-    ArrayManager,
 )
-
+from vnpy.trader.utility import ArrayManager
 from vnpy.trader.constant import Interval, Direction, Offset, Status
 from abmacd.strategy_model.v2_abmacd_ma_filter import ABMacdStrategyModel
 from abmacd.ft_bargenerator import BarGenerator
@@ -61,7 +62,15 @@ class ABMACDStrategy(CtaTemplate):
         self.write_log(setting)
 
         self.sm = ABMacdStrategyModel(
-            self.buy, self.short, self.sell, self.cover, self.size, self.get_pricetick(), self.stoploss_enable, self.sm_debug)
+            self.buy,
+            self.short,
+            self.sell,
+            self.cover,
+            self.size,
+            self.get_pricetick(),
+            self.stoploss_enable,
+            self.sm_debug,
+        )
 
         self.init_bar_generator(self.macd_lvl)
 
@@ -138,16 +147,17 @@ class ABMACDStrategy(CtaTemplate):
     def _m_swap(self, bar: BarData) -> bool:
         m = bar.datetime.month
 
-        if (m == 7 and bar.datetime.day in [29,30,31]) or (m == 12 and bar.datetime.day in [29,30,31]) or (m == 4 and bar.datetime.day in [28,29,30]):
+        if (m == 7 and bar.datetime.day in [29, 30, 31]) or (m == 12 and bar.datetime.day in [
+                29, 30, 31]) or (m == 4 and bar.datetime.day in [28, 29, 30]):
             if self.pos != 0:
                 if self.pos > 0:
                     self.sell(bar.close_price, abs(self.pos))
-                
+
                 if self.pos < 0:
                     self.cover(bar.close_price, abs(self.pos))
-            
+
             return True
-        elif (m == 7 and bar.datetime.day in [26,27,28]) or (m == 12 and bar.datetime.day in [26,27,28]) or (m == 4 and bar.datetime.day in [25,26,27]):
+        elif (m == 7 and bar.datetime.day in [26, 27, 28]) or (m == 12 and bar.datetime.day in [26, 27, 28]) or (m == 4 and bar.datetime.day in [25, 26, 27]):
             self.sm.only_close_handler(bar.close_price)
             return True
 
@@ -159,9 +169,10 @@ class ABMACDStrategy(CtaTemplate):
         """
         if order.status == Status.CANCELLED:
             if order.offset == Offset.CLOSE:
+                assert self.last_bar
                 if order.direction == Direction.LONG:
                     self.cover(self.last_bar.close_price, order.volume)
-                
+
                 if order.direction == Direction.SHORT:
                     self.sell(self.last_bar.close_price, order.volume)
 
@@ -178,13 +189,13 @@ class ABMACDStrategy(CtaTemplate):
     def _update_stoploss_by_trade(self, trade: TradeData):
         if trade.direction is Direction.LONG and trade.offset is Offset.OPEN:
             self.sm.long_stoploss.open(1, trade.price, trade.volume)
-        
+
         if trade.direction is Direction.SHORT and trade.offset is Offset.OPEN:
             self.sm.short_stoploss.open(-1, trade.price, trade.volume)
 
         if trade.direction is Direction.LONG and trade.offset is Offset.CLOSE:
             self.sm.short_stoploss.close(-1)
-        
+
         if trade.direction is Direction.SHORT and trade.offset is Offset.CLOSE:
             self.sm.long_stoploss.close(1)
 
