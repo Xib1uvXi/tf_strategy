@@ -199,6 +199,8 @@ class ABMacdSignalModel:
 
                 return self._b_handle_short()
 
+        return ABMacdAction.EMPTY
+
     def _a_open(self) -> ABMacdAction:
         if not self.asm.macd_gt_zero():
             return ABMacdAction.EMPTY
