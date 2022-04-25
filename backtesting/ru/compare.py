@@ -3,9 +3,7 @@ import os  # nopep8
 root_path = os.getcwd()  # nopep8
 sys.path.append(root_path)  # nopep8
 from typing import Any
-from vnpy_ctastrategy.strategies.atr_rsi_strategy import AtrRsiStrategy
 from vnpy_ctastrategy.strategies.multi_timeframe_strategy import MultiTimeframeStrategy
-from vnpy_ctastrategy.strategies.turtle_signal_strategy import TurtleSignalStrategy
 from vnpy_ctastrategy.strategies.boll_channel_strategy import BollChannelStrategy
 from util import gen_test_name
 from xbacktesting.xvnpy_backtesting import Xbacktesting, Xbatchbacktesting
@@ -46,17 +44,6 @@ def get_vnpy_boll_channel_xbt(period_config: dict[str, Any]) -> Xbacktesting:
             'vnpy_boll_channel'))
 
 
-def get_vnpy_turtle_signal_xbt(period_config: dict[str, Any]) -> Xbacktesting:
-    return Xbacktesting(
-        strategy_class=TurtleSignalStrategy,
-        param_config=default_ru88_param_config,
-        period_config=period_config,
-        strategy_setting={'fixed_size': 10},
-        test_name=gen_test_name(
-            period_config,
-            'vnpy_turtle_signal'))
-
-
 def get_vnpy_multi_timeframe_xbt(period_config: dict[str, Any]) -> Xbacktesting:
     return Xbacktesting(
         strategy_class=MultiTimeframeStrategy,
@@ -66,17 +53,6 @@ def get_vnpy_multi_timeframe_xbt(period_config: dict[str, Any]) -> Xbacktesting:
         test_name=gen_test_name(
             period_config,
             'vnpy_multi_timeframe'))
-
-
-def get_vnpy_atr_rsi_xbt(period_config: dict[str, Any]) -> Xbacktesting:
-    return Xbacktesting(
-        strategy_class=AtrRsiStrategy,
-        param_config=default_ru88_param_config,
-        period_config=period_config,
-        strategy_setting={'fixed_size': 10},
-        test_name=gen_test_name(
-            period_config,
-            'vnpy_atr_rsi'))
 
 
 def nongsiabao():
@@ -104,16 +80,12 @@ def compare():
 
     # vnpy
     vnpy_boll_channel_xbt = get_vnpy_boll_channel_xbt(period_config)
-    vnpy_turtle_signal_xbt = get_vnpy_turtle_signal_xbt(period_config)
     vnpy_multi_timeframe_xbt = get_vnpy_multi_timeframe_xbt(period_config)
-    vnpy_vnpy_atr_rsi_xbt = get_vnpy_atr_rsi_xbt(period_config)
 
     xbatch.add_backtesting(default_xbt)
     xbatch.add_backtesting(enable_mswap)
     xbatch.add_backtesting(vnpy_boll_channel_xbt)
-    xbatch.add_backtesting(vnpy_turtle_signal_xbt)
     xbatch.add_backtesting(vnpy_multi_timeframe_xbt)
-    xbatch.add_backtesting(vnpy_vnpy_atr_rsi_xbt)
 
     xbatch.run_batch_backtesting()
 
