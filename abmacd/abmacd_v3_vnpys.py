@@ -55,9 +55,9 @@ class ABMACDStrategyByVN(CtaTemplate):
 
     parameters = ["a_fast_window", "a_slow_window",
                   "a_signal_period", "b_fast_window", "b_slow_window",
-                  "b_signal_period", "size", "macd_lvl", "b_ma_window", 
+                  "b_signal_period", "size", "macd_lvl", "b_ma_window",
                   "mswap_enable", "stoploss_enable", "sm_debug"
-                ]
+                  ]
 
     variables = ["a_fast_macd0", "a_fast_macd1", "a_slow_macd0", "a_slow_macd1",
                  "b_fast_macd0", "b_fast_macd1", "b_slow_macd0", "b_slow_macd1", "size", "macd_lvl"]
@@ -123,7 +123,7 @@ class ABMACDStrategyByVN(CtaTemplate):
             self.trader._close_short(price, action)
 
         elif action is ABMacdAction.MS_CLOSE_SHORT:
-             self.trader._close_short(price, action)
+            self.trader._close_short(price, action)
 
         elif action is ABMacdAction.MS_CLOSE_LONG:
             self.trader._close_long(price, action)
