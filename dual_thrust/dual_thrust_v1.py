@@ -9,17 +9,14 @@ from vnpy.trader.object import (
 
 from .ft_bargenerator import BarGenerator
 from .strategy_model.signal_model.dual_thrust_sm import DualThrustSignalModel
-from .strategy_model.v1_dual_thrust import DualThrustStrategyModel
+from .strategy_model.v1_dual_thrust import DualThrustAction, DualThrustStrategyModel
 
 
 class ActionHandler(Protocol):
     def __call__(
         self,
+        action: DualThrustAction,
         price: float,
-        volume: float,
-        stop: bool = False,
-        lock: bool = False,
-        net: bool = False,
     ): ...
 
 

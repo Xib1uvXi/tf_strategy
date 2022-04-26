@@ -35,7 +35,7 @@ class DualThrustStrategyModel:
         if not self.open_price_init:
             self.open_price_init = True
 
-    def handler(self, bar_time: time, bar_close_price: float):
+    def handler(self, bar_time: time, bar_close_price: float) -> DualThrustAction:
 
         if not self.open_price_init or not self.signal_value_init:
             return DualThrustAction.EMPTY
