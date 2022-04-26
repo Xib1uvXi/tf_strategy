@@ -9,6 +9,8 @@ vnpy_backtesting_current_strategy_setting = {
     'sm_debug': False,
     'macd_lvl': '1h15min',
     'mswap_enable': True,
+    'stoploss_enable': True,
+    'cancel_enable': True,
     'a_fast_window': 22,
     'a_signal_period': 7,
     'a_slow_window': 33,
