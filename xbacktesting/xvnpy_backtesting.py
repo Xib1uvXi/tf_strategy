@@ -14,6 +14,7 @@ class Xbacktesting:
     _df: DataFrame
     _statistics: Dict[str, Any]
     _test_name: str
+    _xrecord: List[Dict[str, Any]]
 
     def __init__(
             self,
@@ -29,6 +30,8 @@ class Xbacktesting:
         self._test_name = test_name
         self.period_config = period_config
         self.strategy_setting = strategy_setting
+
+        self._xrecord = []
 
         self._init_param()
 
@@ -74,6 +77,55 @@ class Xbacktesting:
             print("order_id: ", data.orderid, "time: ", data.datetime.strftime('%Y-%m-%d %H-%M-%S'), "action: ",
                   data.offset.value, data.direction.value, "price: ", data.price, "amount: ", data.volume)
 
+    def unsafe_calculate_statistics(self):
+        trade_data = self.engine.get_all_trades()
+
+        trader = self.engine.strategy.trader
+        if trader is None:
+            print("trader is None")
+            return
+
+        for order in trader.orders:
+            for id in order['order_id']:
+                find = False
+                for data in trade_data:
+                    if id == data.vt_orderid:
+                        find = True
+                        record = {
+                            "action": order['action'],
+                            "direction": order['direction'],
+                            "time": data.datetime.strftime('%Y-%m-%d %H-%M-%S'),
+                            "order_price": order['price'],
+                            "traded_price": data.price,
+                            "amount": data.volume,
+                            "order_id": data.vt_orderid,
+                            "status": "traded"}
+                        self._xrecord.append(record)
+                        break
+
+                if not find:
+                    record = {
+                        "action": order['action'],
+                        "direction": order['direction'],
+                        "time": "",
+                        "order_price": order['price'],
+                        "traded_price": "",
+                        "amount": order['size'],
+                        "order_id": id,
+                        "status": "canceled"}
+                    self._xrecord.append(record)
+
+    def show_xrecord(self):
+        if len(self._xrecord) == 0:
+            self.unsafe_calculate_statistics()
+
+        print("================================record===============================")
+        for record in self._xrecord:
+            if record['status'] == 'traded':
+                print(f"order_id: {record['order_id']}\t action: {record['action']}\t status: {record['status']}\t direction: {record['direction']}\t amount: {record['amount']}\t order_price: {record['order_price']}\t time: {record['time']}\t traded_price: {record['traded_price']}")
+            else:
+                print(f"order_id: {record['order_id']}\t action: {record['action']}\t status: {record['status']}\t direction: {record['direction']}\t amount: {record['amount']}\t order_price: {record['order_price']}")
+
     def show_balance_chart(self):
         balance_line = go.Scatter(
             x=self._df.index,
@@ -115,7 +167,7 @@ class Xbatchbacktesting:
         for engine in self.engines:
             engine.run_backtesting()
             self.dfs.append({'df': engine._df, 'task': engine._test_name})
-            log = f"周期：{engine.period_config['period']}年\t{engine._test_name}\t 年化收益：\t {engine._statistics['annual_return']:,.2f}%\t 百分比最大回撤：\t {engine._statistics['max_ddpercent']:,.2f}%\t 夏普比率：\t {engine._statistics['sharpe_ratio']:,.2f}"
+            log = f"周期：{engine.period_config['period']}年\t{engine._test_name}\t 年化收益：{engine._statistics['annual_return']:,.2f}%\t 百分比最大回撤： {engine._statistics['max_ddpercent']:,.2f}%\t 夏普比率：{engine._statistics['sharpe_ratio']:,.2f}"
             self.statistics_logs.append(log)
 
         for log in self.statistics_logs:

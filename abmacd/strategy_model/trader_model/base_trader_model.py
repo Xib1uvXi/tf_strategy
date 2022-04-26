@@ -1,4 +1,4 @@
-from typing import Any, Protocol
+from typing import Any, List, Protocol
 
 
 class ProxyCallable(Protocol):
@@ -28,6 +28,7 @@ class BaseTraderModel:
     # close
     sell_proxy: ProxyCallable
     cover_proxy: ProxyCallable
+    orders: List[Any]
 
     def __init__(
             self,
@@ -45,6 +46,7 @@ class BaseTraderModel:
         self.sell_proxy = sell
         self.cover_proxy = cover
         self.debug = debug
+        self.orders = []
 
     def update_pos(self, pos: int):
         self.pos = pos
@@ -80,5 +82,9 @@ class BaseTraderModel:
         return ids
 
     def _log(self, direction: str, price: float, size: float, ids, msg):
+
+        order = {"order_id": ids, "action": msg, "direction": direction, "price": price, "size": size}
+        self.orders.append(order)
+
         if self.debug:
             print("direction: %s, price: %s, amout: %s, ids: %s, msg: %s" % (direction, price, size, ids, msg))
