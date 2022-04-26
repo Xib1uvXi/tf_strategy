@@ -12,6 +12,7 @@ from abmacd.strategy_model.signal_model.macd_sm import ABMacdAction
 from abmacd.strategy_model.v3_abmacd import ABMacdStrategyModelV3
 from abmacd.ft_bargenerator import BarGenerator
 
+
 class ActionHandler(Protocol):
     def __call__(
         self,
