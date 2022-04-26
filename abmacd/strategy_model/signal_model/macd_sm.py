@@ -253,9 +253,9 @@ class ABMacdSignalModel:
 
         # macd < zero
         if self.bsm.macd_lt_zero():
-            if self.b_current_cross_state == -1 and self.bsm.cross_over():
-                self.reset_b_cross_state()
-                return ABMacdAction.B_CLOSE_SHORT_V2
+            # if self.b_current_cross_state == -1 and self.bsm.cross_over():
+            #     self.reset_b_cross_state()
+            #     return ABMacdAction.B_CLOSE_SHORT_V2
 
             return ABMacdAction.EMPTY
 
