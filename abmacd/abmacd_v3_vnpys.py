@@ -26,6 +26,7 @@ class ABMACDStrategyByVN(CtaTemplate):
     stoploss_enable = False
 
     sm_debug = False
+    cancel_enable = False
 
     b_ma_window = 10
 
@@ -56,7 +57,7 @@ class ABMACDStrategyByVN(CtaTemplate):
     parameters = ["a_fast_window", "a_slow_window",
                   "a_signal_period", "b_fast_window", "b_slow_window",
                   "b_signal_period", "size", "macd_lvl", "b_ma_window",
-                  "mswap_enable", "stoploss_enable", "sm_debug"
+                  "mswap_enable", "stoploss_enable", "sm_debug", "cancel_enable"
                   ]
 
     variables = ["a_fast_macd0", "a_fast_macd1", "a_slow_macd0", "a_slow_macd1",
@@ -86,7 +87,8 @@ class ABMACDStrategyByVN(CtaTemplate):
         """
         Callback of new 15 min bar data update.
         """
-        self.cancel_all()
+        if self.cancel_enable:
+            self.cancel_all()
 
     def mock_action_handler(self, price, action):
         if action is ABMacdAction.EMPTY:
@@ -187,7 +189,7 @@ class ABMACDStrategyByVN(CtaTemplate):
         """
         Callback of new order data update.
         """
-        if order.status == Status.CANCELLED:
+        if order.status == Status.CANCELLED and self.cancel_enable:
             if order.offset == Offset.CLOSE:
                 assert self.last_bar
                 if order.direction == Direction.LONG:

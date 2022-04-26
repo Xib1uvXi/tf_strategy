@@ -69,6 +69,110 @@ def nongsiabao():
     xbt.run_backtesting(output=True)
 
 
+def v0_2_2_rc2_mswap_enable():
+    training_dataset_period_config = {"start": datetime(2020, 1, 1), "end": datetime(2020, 12, 31), "period": "1"}
+    validation_dataset_period_config_1 = {"start": datetime(2021, 1, 1), "end": datetime(2021, 12, 31), "period": "1"}
+    validation_dataset_period_config_2 = {"start": datetime(2019, 1, 1), "end": datetime(2019, 12, 31), "period": "1"}
+    test_dataset_period_config = {"start": datetime(2022, 1, 1), "end": datetime(2022, 2, 16), "period": "1"}
+
+    strategy_setting = {'size': 10, 'sm_debug': False, 'macd_lvl': '1h15min', 'mswap_enable': True, 'cancel_enable': True}
+
+    rc2_training_dataset = new_xbt(training_dataset_period_config, strategy_setting, "mswap_enable_training_dataset")
+    rc2_validation_dataset_1 = new_xbt(validation_dataset_period_config_1, strategy_setting, "rc2_mswap_enable_validation_dataset_1")
+    rc2_validation_dataset_2 = new_xbt(validation_dataset_period_config_2, strategy_setting, "rc2_mswap_enable_validation_dataset_2")
+    rc2_test_dataset = new_xbt(test_dataset_period_config, strategy_setting, "rc2_test_dataset")
+
+    training_dataset = new_xbt(training_dataset_period_config, {'size': 10, 'sm_debug': False, 'macd_lvl': '1h15min'}, "rc1_training_dataset")
+    validation_dataset_1 = new_xbt(
+        validation_dataset_period_config_1, {
+            'size': 10, 'sm_debug': False, 'macd_lvl': '1h15min'}, "rc1_validation_dataset_1")
+    validation_dataset_2 = new_xbt(
+        validation_dataset_period_config_2, {
+            'size': 10, 'sm_debug': False, 'macd_lvl': '1h15min'}, "rc1_validation_dataset_2")
+    test_dataset = new_xbt(test_dataset_period_config, {'size': 10, 'sm_debug': False, 'macd_lvl': '1h15min'}, "rc1_test_dataset")
+
+    xbt_list = [
+        rc2_training_dataset,
+        rc2_validation_dataset_1,
+        rc2_validation_dataset_2,
+        rc2_test_dataset,
+        training_dataset,
+        validation_dataset_1,
+        validation_dataset_2,
+        test_dataset]
+
+    xbatch = Xbatchbacktesting()
+
+    for xbt in xbt_list:
+        xbatch.add_backtesting(xbt)
+
+    xbatch.run_batch_backtesting(show_balance=True, show_phl=True)
+
+
+def v0_2_2_rc2_mswap_enable_stoploss_enable():
+    training_dataset_period_config = {"start": datetime(2020, 1, 1), "end": datetime(2020, 12, 31), "period": "1"}
+    validation_dataset_period_config_1 = {"start": datetime(2021, 1, 1), "end": datetime(2021, 12, 31), "period": "1"}
+    validation_dataset_period_config_2 = {"start": datetime(2019, 1, 1), "end": datetime(2019, 12, 31), "period": "1"}
+    test_dataset_period_config = {"start": datetime(2022, 1, 1), "end": datetime(2022, 2, 16), "period": "1"}
+
+    strategy_setting = {'size': 10, 'sm_debug': False, 'macd_lvl': '1h15min', 'mswap_enable': True, 'stoploss_enable': True, 'cancel_enable': True}
+
+    rc2_stoploss_enable_training_dataset = new_xbt(training_dataset_period_config, strategy_setting,
+                                                   "rc2_mswap_enable_stoploss_enable_training_dataset")
+    rc2_stoploss_enable_validation_dataset_1 = new_xbt(
+        validation_dataset_period_config_1,
+        strategy_setting,
+        "rc2_mswap_enable_stoploss_enable_validation_dataset_1")
+    rc2_stoploss_enable_validation_dataset_2 = new_xbt(
+        validation_dataset_period_config_2,
+        strategy_setting,
+        "rc2_mswap_enable_stoploss_enable_validation_dataset_2")
+
+    rc2_test_dataset = new_xbt(test_dataset_period_config, strategy_setting, "rc2_test_dataset")
+
+    rc2_training_dataset = new_xbt(training_dataset_period_config, strategy_setting, "mswap_enable_training_dataset")
+    rc2_validation_dataset_1 = new_xbt(validation_dataset_period_config_1, strategy_setting, "rc2_mswap_enable_validation_dataset_1")
+    rc2_validation_dataset_2 = new_xbt(validation_dataset_period_config_2, strategy_setting, "rc2_mswap_enable_validation_dataset_2")
+
+    xbt_list = [
+        rc2_stoploss_enable_training_dataset,
+        rc2_stoploss_enable_validation_dataset_1,
+        rc2_stoploss_enable_validation_dataset_2,
+        rc2_test_dataset, rc2_training_dataset, rc2_validation_dataset_1, rc2_validation_dataset_2]
+
+    xbatch = Xbatchbacktesting()
+
+    for xbt in xbt_list:
+        xbatch.add_backtesting(xbt)
+
+    xbatch.run_batch_backtesting(show_balance=True, show_phl=True)
+
+
+def v0_2_2_rc1():
+    training_dataset_period_config = {"start": datetime(2020, 1, 1), "end": datetime(2020, 12, 31), "period": "1"}
+    validation_dataset_period_config_1 = {"start": datetime(2021, 1, 1), "end": datetime(2021, 12, 31), "period": "1"}
+    validation_dataset_period_config_2 = {"start": datetime(2019, 1, 1), "end": datetime(2019, 12, 31), "period": "1"}
+    test_dataset_period_config = {"start": datetime(2022, 1, 1), "end": datetime(2022, 2, 16), "period": "1"}
+
+    training_dataset = new_xbt(training_dataset_period_config, {'size': 10, 'sm_debug': False, 'macd_lvl': '1h15min'}, "rc1_training_dataset")
+    validation_dataset_1 = new_xbt(
+        validation_dataset_period_config_1, {
+            'size': 10, 'sm_debug': False, 'macd_lvl': '1h15min'}, "rc1_validation_dataset_1")
+    validation_dataset_2 = new_xbt(
+        validation_dataset_period_config_2, {
+            'size': 10, 'sm_debug': False, 'macd_lvl': '1h15min'}, "rc1_validation_dataset_2")
+    test_dataset = new_xbt(test_dataset_period_config, {'size': 10, 'sm_debug': False, 'macd_lvl': '1h15min'}, "rc1_test_dataset")
+
+    xbt_list = [training_dataset, validation_dataset_1, validation_dataset_2, test_dataset]
+
+    xbatch = Xbatchbacktesting()
+
+    for xbt in xbt_list:
+        xbatch.add_backtesting(xbt)
+
+    xbatch.run_batch_backtesting(show_balance=True, show_phl=True)
+
+
 def compare():
     period_config = {"start": datetime(2020, 1, 1), "end": datetime(2020, 12, 31), "period": "1"}
 
@@ -91,5 +195,4 @@ def compare():
 
 
 if __name__ == '__main__':
-    nongsiabao()
-    compare()
+    v0_2_2_rc2_mswap_enable()
