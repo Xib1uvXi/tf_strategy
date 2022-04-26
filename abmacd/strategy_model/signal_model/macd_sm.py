@@ -87,6 +87,12 @@ class ABMacdAction(Enum):
     MS_CLOSE_LONG = "MS平多"
     MUST_CLOSE = "S强制平仓"
 
+    # for debug
+    STOPLOSS_CLOSE_SHORT = "STOPLOSS平空"
+    STOPLOSS_CLOSE_LONG = "STOPLOSS平多"
+    RESEND_CLOSE_SHORT = "RESEND平空"
+    RESEND_CLOSE_LONG = "RESEND平多"
+
 
 class ABMacdSignalModel:
     asm: MacdSignalModel

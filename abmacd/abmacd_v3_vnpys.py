@@ -179,9 +179,12 @@ class ABMACDStrategyByVN(CtaTemplate):
 
         if self.stoploss_enable:
             if self.long_stoploss.need_close(bar.close_price):
-                self.sell(bar.close_price, abs(self.pos))
+                if self.pos > 0:
+                    self.trader._close_long(bar.close_price, ABMacdAction.STOPLOSS_CLOSE_LONG)
+
             if self.short_stoploss.need_close(bar.close_price):
-                self.cover(bar.close_price, abs(self.pos))
+                if self.pos < 0:
+                    self.trader._close_short(bar.close_price, ABMacdAction.STOPLOSS_CLOSE_SHORT)
 
         self.sm.on_bar(bar)
 
@@ -193,10 +196,12 @@ class ABMACDStrategyByVN(CtaTemplate):
             if order.offset == Offset.CLOSE:
                 assert self.last_bar
                 if order.direction == Direction.LONG:
-                    self.cover(self.last_bar.close_price, order.volume)
+                    if self.pos < 0 and abs(self.pos) >= abs(order.volume):
+                        self.trader._cover_with_amount(self.last_bar.close_price, abs(order.volume), ABMacdAction.RESEND_CLOSE_SHORT)
 
                 if order.direction == Direction.SHORT:
-                    self.sell(self.last_bar.close_price, order.volume)
+                    if self.pos > 0 and abs(self.pos) >= abs(order.volume):
+                        self.trader._sell_with_amount(self.last_bar.close_price, abs(order.volume), ABMacdAction.RESEND_CLOSE_LONG)
 
     def on_trade(self, trade: TradeData):
         """

@@ -69,6 +69,16 @@ class BaseTraderModel:
         self._log("cover", price, abs(self.pos), ids, msg)
         return ids
 
+    def _sell_with_amount(self, price: float, amount: float, msg: Any):
+        ids = self.sell_proxy(price, abs(amount))
+        self._log("sell", price,  abs(amount), ids, msg)
+        return ids
+
+    def _cover_with_amount(self, price: float, amount: float, msg: Any):
+        ids = self.cover_proxy(price, abs(amount))
+        self._log("cover", price, abs(amount), ids, msg)
+        return ids
+
     def _log(self, direction: str, price: float, size: float, ids, msg):
         if self.debug:
             print("direction: %s, price: %s, amout: %s, ids: %s, msg: %s" % (direction, price, size, ids, msg))
