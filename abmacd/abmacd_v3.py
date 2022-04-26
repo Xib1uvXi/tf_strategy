@@ -1,6 +1,6 @@
 
 from dataclasses import dataclass
-from typing import Callable
+from typing import Protocol
 from vnpy.trader.object import (
     TickData,
     BarData,
@@ -11,6 +11,14 @@ from abmacd.strategy_model.builder import NewABMacdStrategyModel
 from abmacd.strategy_model.signal_model.macd_sm import ABMacdAction
 from abmacd.strategy_model.v3_abmacd import ABMacdStrategyModelV3
 from abmacd.ft_bargenerator import BarGenerator
+
+class ActionHandler(Protocol):
+    def __call__(
+        self,
+        price: float,
+        action: ABMacdAction,
+    ):
+        ...
 
 
 @dataclass
@@ -36,7 +44,7 @@ class ABMACDStrategy:
     last_tick = None
     last_bar = None
 
-    def __init__(self, config: ABMACDStrategyConfig, action_handler: Callable[[float, ABMacdAction], None]):
+    def __init__(self, config: ABMACDStrategyConfig, action_handler: ActionHandler):
         self.config = config
 
         self.sm = NewABMacdStrategyModel(config.mswap_enable)
