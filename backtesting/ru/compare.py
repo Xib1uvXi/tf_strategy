@@ -56,7 +56,7 @@ def get_vnpy_multi_timeframe_xbt(period_config: dict[str, Any]) -> Xbacktesting:
 
 
 def nongsiabao():
-    strategy_setting = {'size': 10, 'macd_lvl': '1h15min', 'mswap_enable': True, 'stoploss_enable': True}
+    strategy_setting = {'size': 10, 'macd_lvl': '1h15min', 'sm_debug': True, 'cancel_enable': True, 'mswap_enable': True, 'stoploss_enable': True}
     period_config = {"start": datetime(2020, 1, 1), "end": datetime(2020, 12, 31), "period": "1"}
     xbt = Xbacktesting(
         strategy_class=vnpy_backtesting_current_strategy,
@@ -67,6 +67,7 @@ def nongsiabao():
             period_config,
             "nongsiabao"))
     xbt.run_backtesting(output=True)
+    xbt.show_trade_data()
 
 
 def v0_2_2_rc2_mswap_enable():
@@ -195,4 +196,4 @@ def compare():
 
 
 if __name__ == '__main__':
-    v0_2_2_rc2_mswap_enable()
+    nongsiabao()
